@@ -25,6 +25,10 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # >>> find_words(test_text, 'de')
 # {'izdere', 'debel', 'oddide', 'začudeno'}
 ###############################################################################
+def find_words(test_text, niz):
+  vse_besede = r'\b\w*'+ niz+r'\w*\b'
+  return set(re.findall(vse_besede, test_text))
+
 
 
 ###############################################################################
