@@ -1,7 +1,5 @@
-import requests
-import re
-import os
 import csv
+import os
 
 ###############################################################################
 # Najprej definirajmo nekaj pomožnih orodij za pridobivanje podatkov s spleta.
@@ -18,8 +16,9 @@ csv_filename = 'macke.csv'
 
 
 def download_url_to_string(url):
-    '''This function takes a URL as argument and tries to download it
-    using requests. Upon success, it returns the page contents as string.'''
+    """Funkcija kot argument sprejme niz in puskuša vrniti vsebino te spletne
+    strani kot niz. V primeru, da med izvajanje pride do napake vrne None.
+    """
     try:
         page_content = requests.get(url).text()
         # del kode, ki morda sproži napako
@@ -33,14 +32,16 @@ def download_url_to_string(url):
     return page_content
 
 def save_string_to_file(text, directory, filename):
-    '''Write "text" to the file "filename" located in directory "directory",
-    creating "directory" if necessary. If "directory" is the empty string, use
-    the current directory.'''
+    """Funkcija zapiše vrednost parametra "text" v novo ustvarjeno datoteko
+    locirano v "directory"/"filename", ali povozi obstoječo. V primeru, da je
+    niz "directory" prazen datoteko ustvari v trenutni mapi.
+    """
     os.makedirs(directory, exist_ok=True)
     path = os.path.join(directory, filename)
     with open(path, 'w', encoding='utf-8') as file_out:
         file_out.write(text)
     return None
+
 
 # Definirajte funkcijo, ki prenese glavno stran in jo shrani v datoteko.
 
@@ -58,8 +59,9 @@ def save_frontpage():
 
 
 def read_file_to_string(directory, filename):
-    '''Return the contents of the file "directory"/"filename" as a string.'''
-    return TODO
+    """Funkcija vrne celotno vsebino datoteke "directory"/"filename" kot niz"""
+    raise NotImplementedError()
+
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja vsebino spletne strani,
 # in ga razdeli na dele, kjer vsak del predstavlja en oglas. To storite s
@@ -67,27 +69,33 @@ def read_file_to_string(directory, filename):
 # oglasa. Funkcija naj vrne seznam nizov.
 
 
-def page_to_ads(TODO):
-    '''Split "page" to a list of advertisement blocks.'''
-    return TODO
+def page_to_ads(page_content):
+    """Funkcija poišče posamezne ogllase, ki se nahajajo v spletni strani in
+    vrne njih seznam"""
+    raise NotImplementedError()
+
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
 # podatke o imenu, ceni in opisu v oglasu.
 
 
-def get_dict_from_ad_block(TODO):
-    '''Build a dictionary containing the name, description and price
-    of an ad block.'''
-    return TODO
+def get_dict_from_ad_block(block):
+    """Funkcija iz niza za posamezen oglasni blok izlušči podatke o imenu, ceni
+    in opisu ter vrne slovar, ki vsebuje ustrezne podatke
+    """
+    raise NotImplementedError()
+
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
 # besedilo spletne strani, in vrne seznam slovarjev, ki vsebujejo podatke o
 # vseh oglasih strani.
 
 
-def ads_from_file(TODO):
-    '''Parse the ads in filename/directory into a dictionary list.'''
-    return TODO
+def ads_from_file(filename, directory):
+    """Funkcija prebere podatke v datoteki "directory"/"filename" in jih
+    pretvori (razčleni) v pripadajoč seznam slovarjev za vsak oglas posebej."""
+    raise NotImplementedError()
+
 
 ###############################################################################
 # Obdelane podatke želimo sedaj shraniti.
@@ -95,9 +103,10 @@ def ads_from_file(TODO):
 
 
 def write_csv(fieldnames, rows, directory, filename):
-    '''Write a CSV file to directory/filename. The fieldnames must be a list of
-    strings, the rows a list of dictionaries each mapping a fieldname to a
-    cell-value.'''
+    """
+    Funkcija v csv datoteko podano s parametroma "directory"/"filename" zapiše
+    vrednosti v parametru "rows" pripadajoče ključem podanim v "fieldnames"
+    """
     os.makedirs(directory, exist_ok=True)
     path = os.path.join(directory, filename)
     with open(path, 'w') as csv_file:
@@ -105,12 +114,50 @@ def write_csv(fieldnames, rows, directory, filename):
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
-    return None
+    return
+
 
 # Definirajte funkcijo, ki sprejme neprazen seznam slovarjev, ki predstavljajo
 # podatke iz oglasa mačke, in zapiše vse podatke v csv datoteko. Imena za
 # stolpce [fieldnames] pridobite iz slovarjev.
 
 
-def write_cat_ads_to_csv(TODO):
-    return TODO
+def write_cat_ads_to_csv(ads, directory, filename):
+    """Funkcija vse podatke iz parametra "ads" zapiše v csv datoteko podano s
+    parametroma "directory"/"filename". Funkcija predpostavi, da sa ključi vseh
+    sloverjev parametra ads enaki in je seznam ads neprazen.
+
+    """
+    # Stavek assert preveri da zahteva velja
+    # Če drži se program normalno izvaja, drugače pa sproži napako
+    # Prednost je v tem, da ga lahko pod določenimi pogoji izklopimo v
+    # produkcijskem okolju
+    assert ads and (all(j.keys() == ads[0].keys() for j in ads))
+    raise NotImplementedError()
+
+
+# Celoten program poženemo v glavni funkciji
+
+def main(redownload=True, reparse=True):
+    """Funkcija izvede celoten del pridobivanja podatkov:
+    1. Oglase prenese iz bolhe
+    2. Lokalno html datoteko pretvori v lepšo predstavitev podatkov
+    3. Podatke shrani v csv datoteko
+    """
+    # Najprej v lokalno datoteko shranimo glavno stran
+
+    # Iz lokalne (html) datoteke preberemo podatke
+
+    # Podatke prebermo v lepšo obliko (seznam slovarjev)
+
+    # Podatke shranimo v csv datoteko
+
+    # Dodatno: S pomočjo parameteov funkcije main omogoči nadzor, ali se
+    # celotna spletna stran ob vsakem zagon prense (četudi že obstaja)
+    # in enako za pretvorbo
+
+    raise NotImplementedError()
+
+
+if __name__ == '__main__':
+    main()
