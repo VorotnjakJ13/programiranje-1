@@ -1,5 +1,8 @@
 import csv
 import os
+import requests
+import re
+import orodja
 
 ###############################################################################
 # Najprej definirajmo nekaj pomožnih orodij za pridobivanje podatkov s spleta.
@@ -46,11 +49,13 @@ def save_string_to_file(text, directory, filename):
 # Definirajte funkcijo, ki prenese glavno stran in jo shrani v datoteko.
 
 
-def save_frontpage():
+def save_frontpage(url, directory, filename):
     '''Save "cats_frontpage_url" to the file
     "cat_directory"/"frontpage_filename"'''
-    content = page_content()
-    save_string_to_file(content, cat_directory, filename)
+    content = download_url_to_string(url)
+    directory= cat_directory
+    filename = csv_filename
+    save_string_to_file(content, directory, filename)
     return None
 
 ###############################################################################
@@ -60,7 +65,9 @@ def save_frontpage():
 
 def read_file_to_string(directory, filename):
     """Funkcija vrne celotno vsebino datoteke "directory"/"filename" kot niz"""
-    raise NotImplementedError()
+    with open ( csv_filename, 'r') as catsfile:
+        data = catsfile.read()
+    return data
 
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja vsebino spletne strani,
@@ -72,18 +79,40 @@ def read_file_to_string(directory, filename):
 def page_to_ads(page_content):
     """Funkcija poišče posamezne ogllase, ki se nahajajo v spletni strani in
     vrne njih seznam"""
-    raise NotImplementedError()
+    #re.compile tvori niz  podatkov, definira od kje do kje je en oglas
+    #od div class= ad do div class = clear. nato pride naslednji oglas
+    oglas = re.compile(
+        r'<div class = "ad">(.*?)<div class = "clear">',
+        flags = re.DOTALL        
+        )
+    oglasi= re.findall(oglas,page_content)
+    return oglasi
+    # re.findall vrne seznam nizov 
 
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
 # podatke o imenu, ceni in opisu v oglasu.
 
 
-def get_dict_from_ad_block(block):
+def get_dict_from_ad_block(oglas):
     """Funkcija iz niza za posamezen oglasni blok izlušči podatke o imenu, ceni
     in opisu ter vrne slovar, ki vsebuje ustrezne podatke
     """
-    raise NotImplementedError()
+    vzorec_oglasa= re.compile(
+        r'<h3><a title = "(?P<ime>.+?)"'
+        r'href = "(?P<link>.+?)"'
+        r'class="additionalInfo"><span><b>(?P<rodovnik>.*?)</b></span></div>'
+        r'<div class = "price"><span>(?P<cena>.*?)</span></div>',
+        flags = re.DOTALL
+    )
+    data = re.search(vzorec_oglasa, oglas)
+    #re.search(pattern, string, flags=0)
+    #pojdi čez niz in poišči vzorec ki se ujema. vrni None če se nič ne ujema
+    slovar_oglasov = data.groupdict()
+    #.groupdict() ko najdeš vzorec ki se ujema  sestavi slovar iz podatkov
+    return slovar_oglasov
+
+
 
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
@@ -94,8 +123,16 @@ def get_dict_from_ad_block(block):
 def ads_from_file(filename, directory):
     """Funkcija prebere podatke v datoteki "directory"/"filename" in jih
     pretvori (razčleni) v pripadajoč seznam slovarjev za vsak oglas posebej."""
-    raise NotImplementedError()
-
+    stran_s_podatki = read_file_to_string(filename, directory)
+    Posamezni_oglasi = page_to_ads (stran_s_podatki)
+    for oglas in Posamezni_oglasi : 
+        seznam_slovarjev=[]
+        slovar = get_dict_from_ad_block(oglas)
+        seznam_slovarjev.append(slovar)
+    return seznam_slovarjev
+    
+  
+    
 
 ###############################################################################
 # Obdelane podatke želimo sedaj shraniti.
@@ -159,5 +196,5 @@ def main(redownload=True, reparse=True):
     raise NotImplementedError()
 
 
-if __name__ == '__main__':
-    main()
+#if __name__ == '__main__':
+#    main()
