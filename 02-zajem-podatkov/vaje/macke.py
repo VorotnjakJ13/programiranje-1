@@ -10,25 +10,27 @@ import csv
 # definiratje URL glavne strani bolhe za oglase z mačkami
 cats_frontpage_url = 'http://www.bolha.com/zivali/male-zivali/macke/'
 # mapa, v katero bomo shranili podatke
-cat_directory = 'TODO'
+cat_directory = 'macke'
 # ime datoteke v katero bomo shranili glavno stran
-frontpage_filename = 'TODO'
+frontpage_filename = 'macke_frontpage.html'
 # ime CSV datoteke v katero bomo shranili podatke
-csv_filename = 'TODO'
+csv_filename = 'macke.csv'
 
 
-def download_url_to_string(TODO):
+def download_url_to_string(url):
     '''This function takes a URL as argument and tries to download it
     using requests. Upon success, it returns the page contents as string.'''
     try:
+        page_content = requests.get(url).text()
         # del kode, ki morda sproži napako
-        return TODO
-    except 'TODO':
+    
+    except requests.exceptions.RequestException as e :
         # koda, ki se izvede pri napaki
         # dovolj je če izpišemo opozorilo in prekinemo izvajanje funkcije
-        return TODO
+        print(e)
+        page_content =""
     # nadaljujemo s kodo če ni prišlo do napake
-    return TODO
+    return page_content
 
 
 def save_string_to_file(text, directory, filename):
@@ -44,10 +46,14 @@ def save_string_to_file(text, directory, filename):
 # Definirajte funkcijo, ki prenese glavno stran in jo shrani v datoteko.
 
 
-def save_frontpage(TODO):
+def save_frontpage(url, directory, filename):
     '''Save "cats_frontpage_url" to the file
     "cat_directory"/"frontpage_filename"'''
-    return TODO
+    content = download_url_to_string(url)
+    directory = cat_directory
+    filename = csv_filename
+    save_string_to_file(content, directory, filename)
+    return None
 
 ###############################################################################
 # Po pridobitvi podatkov jih želimo obdelati.
@@ -56,7 +62,9 @@ def save_frontpage(TODO):
 
 def read_file_to_string(directory, filename):
     '''Return the contents of the file "directory"/"filename" as a string.'''
-    return TODO
+    with open (csv_filename, 'r') as catsfile:
+        data = catsfile.read()
+    return data
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja vsebino spletne strani,
 # in ga razdeli na dele, kjer vsak del predstavlja en oglas. To storite s
@@ -64,27 +72,54 @@ def read_file_to_string(directory, filename):
 # oglasa. Funkcija naj vrne seznam nizov.
 
 
-def page_to_ads(TODO):
+def page_to_ads(page_content):
     '''Split "page" to a list of advertisement blocks.'''
-    return TODO
+    #re.compile tvori niz podatkov, definira od kje do kje je en oglas
+    #od div clas = ad do div clas = cleas . nato pride naslednji oglas.
+    oglas = re.compile(
+        r'<dic clas ="ad">(.*?)<div clas = "clear">', flags = re.DOTALL
+        )
+    oglasi = re.findall(oglas, page_content)
+    return oglasi
+    #re.findall vrne seznam nizov.
+
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
 # podatke o imenu, ceni in opisu v oglasu.
 
 
-def get_dict_from_ad_block(TODO):
+def get_dict_from_ad_block(oglas):
     '''Build a dictionary containing the name, description and price
     of an ad block.'''
-    return TODO
+    vzorec_oglasa = re.compile(
+        r'<h3><a title = "(?P<ime>.+?)"'
+        r'href = "(?P<link>.+?)"'
+        r'class = "additionalInfo"><span><b>(?P<rodovnik>.*?)</b></span><div/>'
+        r'<div class = "price"><span>(?P<cena>.*?)</span></div>',
+        flags = re.DOTALL
+    )
+    data = re.search(vzorec_oglasa, oglas)
+    #re.search(pattern, string,flags=0)
+    #pojdi čez niz in poišči vzorec ki se ujema. vrni none če se nič ne ujema
+    slovar_oglasov = data.groupdict()
+    #.groupdict() ko najdeš vzorec ki se ujema sestavi slovar iz podatkov
+
+    return slovar_oglasov
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
 # besedilo spletne strani, in vrne seznam slovarjev, ki vsebujejo podatke o
 # vseh oglasih strani.
 
 
-def ads_from_file(TODO):
-    '''Parse the ads in filename/directory into a dictionary list.'''
-    return TODO
+def ads_from_file(filename, directory):
+    stran_s_podatki = read_file_to_string(filename,directory)
+    posamezni_oglasi = page_to_ads (stran_s_podatki)
+    for oglas in posamezni_oglasi : 
+        seznam_slovarjev= []
+        slovar = get_dict_from_ad_block(oglas)
+        seznam_slovarjev.append(slovar)
+    return seznam_slovarjev
+
 
 ###############################################################################
 # Obdelane podatke želimo sedaj shraniti.
