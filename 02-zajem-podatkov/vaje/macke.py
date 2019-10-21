@@ -19,20 +19,20 @@ csv_filename = 'macke.csv'
 
 
 def download_url_to_string(url):
-    """Funkcija kot argument sprejme niz in puskuša vrniti vsebino te spletne
-    strani kot niz. V primeru, da med izvajanje pride do napake vrne None.
-    """
+    '''This function takes a URL as argument and tries to download it
+    using requests. Upon success, it returns the page contents as string.'''
     try:
         page_content = requests.get(url).text()
         # del kode, ki morda sproži napako
-        
-    except requests.exceptions.RequestException as e:
+    
+    except requests.exceptions.RequestException as e :
         # koda, ki se izvede pri napaki
         # dovolj je če izpišemo opozorilo in prekinemo izvajanje funkcije
         print(e)
-        page_content=""
+        page_content =""
     # nadaljujemo s kodo če ni prišlo do napake
     return page_content
+
 
 def save_string_to_file(text, directory, filename):
     """Funkcija zapiše vrednost parametra "text" v novo ustvarjeno datoteko
@@ -53,7 +53,7 @@ def save_frontpage(url, directory, filename):
     '''Save "cats_frontpage_url" to the file
     "cat_directory"/"frontpage_filename"'''
     content = download_url_to_string(url)
-    directory= cat_directory
+    directory = cat_directory
     filename = csv_filename
     save_string_to_file(content, directory, filename)
     return None
@@ -64,11 +64,10 @@ def save_frontpage(url, directory, filename):
 
 
 def read_file_to_string(directory, filename):
-    """Funkcija vrne celotno vsebino datoteke "directory"/"filename" kot niz"""
-    with open ( csv_filename, 'r') as catsfile:
+    '''Return the contents of the file "directory"/"filename" as a string.'''
+    with open (csv_filename, 'r') as catsfile:
         data = catsfile.read()
     return data
-
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja vsebino spletne strani,
 # in ga razdeli na dele, kjer vsak del predstavlja en oglas. To storite s
@@ -77,18 +76,15 @@ def read_file_to_string(directory, filename):
 
 
 def page_to_ads(page_content):
-    """Funkcija poišče posamezne ogllase, ki se nahajajo v spletni strani in
-    vrne njih seznam"""
-    #re.compile tvori niz  podatkov, definira od kje do kje je en oglas
-    #od div class= ad do div class = clear. nato pride naslednji oglas
+    '''Split "page" to a list of advertisement blocks.'''
+    #re.compile tvori niz podatkov, definira od kje do kje je en oglas
+    #od div clas = ad do div clas = cleas . nato pride naslednji oglas.
     oglas = re.compile(
-        r'<div class = "ad">(.*?)<div class = "clear"></div>',
-        flags = re.DOTALL        
+        r'<dic clas ="ad">(.*?)<div clas = "clear">', flags = re.DOTALL
         )
-    
-    oglasi= re.findall(oglas,page_content)
+    oglasi = re.findall(oglas, page_content)
     return oglasi
-    # re.findall vrne seznam nizov 
+    #re.findall vrne seznam nizov.
 
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
@@ -96,25 +92,22 @@ def page_to_ads(page_content):
 
 
 def get_dict_from_ad_block(oglas):
-    """Funkcija iz niza za posamezen oglasni blok izlušči podatke o imenu, ceni
-    in opisu ter vrne slovar, ki vsebuje ustrezne podatke
-    """
-    vzorec_oglasa= re.compile(
+    '''Build a dictionary containing the name, description and price
+    of an ad block.'''
+    vzorec_oglasa = re.compile(
         r'<h3><a title = "(?P<ime>.+?)"'
         r'href = "(?P<link>.+?)"'
-        r'class="additionalInfo"><span><b>(?P<rodovnik>.*?)</b></span></div>'
+        r'class = "additionalInfo"><span><b>(?P<rodovnik>.*?)</b></span><div/>'
         r'<div class = "price"><span>(?P<cena>.*?)</span></div>',
         flags = re.DOTALL
     )
     data = re.search(vzorec_oglasa, oglas)
-    #re.search(pattern, string, flags=0)
-    #pojdi čez niz in poišči vzorec ki se ujema. vrni None če se nič ne ujema
+    #re.search(pattern, string,flags=0)
+    #pojdi čez niz in poišči vzorec ki se ujema. vrni none če se nič ne ujema
     slovar_oglasov = data.groupdict()
-    #.groupdict() ko najdeš vzorec ki se ujema  sestavi slovar iz podatkov
+    #.groupdict() ko najdeš vzorec ki se ujema sestavi slovar iz podatkov
+
     return slovar_oglasov
-
-
-
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
 # besedilo spletne strani, in vrne seznam slovarjev, ki vsebujejo podatke o
@@ -122,18 +115,14 @@ def get_dict_from_ad_block(oglas):
 
 
 def ads_from_file(filename, directory):
-    """Funkcija prebere podatke v datoteki "directory"/"filename" in jih
-    pretvori (razčleni) v pripadajoč seznam slovarjev za vsak oglas posebej."""
-    stran_s_podatki = read_file_to_string(filename, directory)
-    Posamezni_oglasi = page_to_ads (stran_s_podatki)
-    for oglas in Posamezni_oglasi : 
-        seznam_slovarjev=[]
+    stran_s_podatki = read_file_to_string(filename,directory)
+    posamezni_oglasi = page_to_ads (stran_s_podatki)
+    for oglas in posamezni_oglasi : 
+        seznam_slovarjev= []
         slovar = get_dict_from_ad_block(oglas)
         seznam_slovarjev.append(slovar)
     return seznam_slovarjev
-    
-  
-    
+
 
 ###############################################################################
 # Obdelane podatke želimo sedaj shraniti.
