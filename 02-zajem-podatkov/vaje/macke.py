@@ -82,9 +82,10 @@ def page_to_ads(page_content):
     #re.compile tvori niz  podatkov, definira od kje do kje je en oglas
     #od div class= ad do div class = clear. nato pride naslednji oglas
     oglas = re.compile(
-        r'<div class = "ad">(.*?)<div class = "clear">',
+        r'<div class = "ad">(.*?)<div class = "clear"></div>',
         flags = re.DOTALL        
         )
+    
     oglasi= re.findall(oglas,page_content)
     return oglasi
     # re.findall vrne seznam nizov 
