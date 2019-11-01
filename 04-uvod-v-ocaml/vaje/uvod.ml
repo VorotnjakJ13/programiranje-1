@@ -50,7 +50,7 @@ let rec multiply list =
   | x :: xs -> x*(multiply xs)
 
 let rec multiply' = function
-  | [] ->1
+  | []->1
   | x::xs ->x*(multiply' xs)
 
 (*----------------------------------------------------------------------------* ]
@@ -69,7 +69,7 @@ let rec multiply' = function
 [*----------------------------------------------------------------------------*)
 
 let rec sum_int_pairs = function
-| []->[]
+(*[]->[]*)
 | (x1,x2) :: pairs -> (x1+x2) :: sum_int_pairs pairs
   
 
@@ -172,7 +172,7 @@ let rec rotate n = function
 
 let rec remove x = function 
   | [] -> []
-  | x::xs -> if x not in list then failwith " element not in list" else  x:: remove(x) xs
+(* | x::xs -> if x not in list then failwith " element not in list" else  x:: remove(x) xs *)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [is_palindrome] za dani seznam ugotovi ali predstavlja palindrom.
