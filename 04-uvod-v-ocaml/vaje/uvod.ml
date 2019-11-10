@@ -69,7 +69,7 @@ let rec multiply' = function
 [*----------------------------------------------------------------------------*)
 
 let rec sum_int_pairs = function
-(*[]->[]*)
+|[]->[]
 | (x1,x2) :: pairs -> (x1+x2) :: sum_int_pairs pairs
   
 
@@ -171,8 +171,11 @@ let rec rotate n = function
 [*----------------------------------------------------------------------------*)
 
 let rec remove x = function 
-  | [] -> []
-(* | x::xs -> if x not in list then failwith " element not in list" else  x:: remove(x) xs *)
+
+  | y::ys -> if y=x 
+  then remove x ys
+  else y::remove x ys 
+  | []-> []
 
 (*----------------------------------------------------------------------------*]
  Funkcija [is_palindrome] za dani seznam ugotovi ali predstavlja palindrom.
@@ -184,8 +187,11 @@ let rec remove x = function
  - : bool = false
 [*----------------------------------------------------------------------------*)
 
-let rec is_palindrome = ()
-
+let rec is_palindrome list= 
+  let rec reverse = function 
+    |x::xs -> reverse xs @ [x]
+      |[]->[]
+  in list = reverse list
 (*----------------------------------------------------------------------------*]
  Funkcija [max_on_components] sprejme dva seznama in vrne nov seznam, katerega
  elementi so večji od istoležnih elementov na danih seznamih. Skupni seznam ima
@@ -195,7 +201,11 @@ let rec is_palindrome = ()
  - : int list = [5; 4; 3; 3; 4]
 [*----------------------------------------------------------------------------*)
 
-let rec max_on_components = ()
+let rec max_on_components list1 list2 = 
+  match ( list1, list2) with 
+  | (x::xs,y::ys)-> max x y :: max_on_components xs ys
+  | _->[]
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [second_largest] vrne drugo največjo vrednost v seznamu. Pri tem se
@@ -207,4 +217,9 @@ let rec max_on_components = ()
  - : int = 10
 [*----------------------------------------------------------------------------*)
 
-let rec second_largest = ()
+let rec second_largest list =
+  let rec maxx = function 
+    | []-> failwith "List is too short."
+      | x::[]-> x
+      | x::xs -> max x (maxx xs)
+  in maxx(remove (maxx list)list) 
