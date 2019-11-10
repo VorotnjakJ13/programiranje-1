@@ -130,7 +130,9 @@ let rec zip list1 list2 =
  - : int list * string list = ([0; 1; 2], ["a"; "b"; "c"])
 [*----------------------------------------------------------------------------*)
 
-let rec unzip = ()
+let rec unzip = function 
+  |[] ->([],[])
+  |(x,y)::a -> let (l1, l2) = unzip a in (x::l1,y::l2)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [unzip_tlrec] je repno rekurzivna različica funkcije [unzip].
@@ -139,7 +141,12 @@ let rec unzip = ()
  - : int list * string list = ([0; 1; 2], ["a"; "b"; "c"])
 [*----------------------------------------------------------------------------*)
 
-let rec unzip_tlrec = ()
+let rec unzip_tlrec list = 
+  let rec unzip_aux list acc1 acc2= 
+    match list with 
+    |[]->(reverse acc1,reverse acc2)
+    |(x,y)::a -> unzip_aux a(x::acc1)(y::acc2)
+    in unzip_aux list [] 
 
 (*----------------------------------------------------------------------------*]
  Funkcija [loop condition f x] naj se izvede kot python koda:
@@ -154,7 +161,9 @@ let rec unzip_tlrec = ()
  - : int = 12
 [*----------------------------------------------------------------------------*)
 
-let rec loop = ()
+let rec loop condition f x =
+  if condition x then let x = f x in loop condition f x
+  else x 
 
 (*----------------------------------------------------------------------------*]
  Funkcija [fold_left_no_acc f list] sprejme seznam [x0; x1; ...; xn] in
