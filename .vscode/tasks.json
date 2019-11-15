@@ -12,7 +12,7 @@
                 "command": "python -i \\\"${file}\\\""
             },
             "linux": {
-                "command": "python -i \"${file}\""
+                "command": "python3 -i \"${file}\""
             },
             "osx": {
                 "command": "python -i \"${file}\""
