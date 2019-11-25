@@ -41,17 +41,17 @@ type 'a drevo = {
   }
 
 (* 2.2) Napišite funkcijo, ki vrne koren danega rožnega drevesa. *)
-let koren = vrednost
+let koren = failwith  "dopolni me 2.2"
 
 
 
 (* 2.3) Napišite funkcijo, ki preveri, ali drevo celih števil vsebuje kakšno negativno število. *)
-let kaksno_negativno = failwith "dopolni me"
+let kaksno_negativno = failwith"dopolni me 2.3"
 
 (* 2.4) Sestavite funkcijo, ki sprejme naravno število ter sestavi (poljubno)
    drevo, ki ima toliko otrok.
    Namig: napišite pomožno funkcijo, ki ustvari poljuben seznam dane dolžine. *)
-let drevo_z_veliko_otroci = failwith "dopolni me"
+let drevo_z_veliko_otroci = failwith"dopolni me2.4"
 
 (* 2.5) Sestavite funkcijo, ki izračuna število vseh vozlišč v drevesu.
    Če želite vse točke, mora biti funkcija repno rekurzivna.
@@ -59,4 +59,4 @@ let drevo_z_veliko_otroci = failwith "dopolni me"
    Opomba: kot ste videli na vajah, nekatere funkcije iz modula List,
    na primer List.map, niso repno rekurzivne, zato se jim raje
    izognite. *)
-let velikost = failwith "dopolni me"
+let velikost = failwith "dopolni me2.5"
