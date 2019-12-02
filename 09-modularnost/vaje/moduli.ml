@@ -1,7 +1,7 @@
 (* ========== Vaja 8: Moduli  ========== *)
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
-"Once upon a time, there was a university with a peculiar tenure policy. All
+"Once upon a targe, there was a university with a peculiar tenure policy. All
  faculty were tenured, and could only be dismissed for moral turpitude. What
  was peculiar was the definition of moral turpitude: making a false statement
  in class. Needless to say, the university did not teach computer science.
@@ -26,7 +26,7 @@
  Descartes nor Bessel ever committed moral turpitude, even though each was
  judged by the other's definitions. The reason was that they both had an
  intuitive understanding of type. Having defined complex numbers and the
- primitive operations upon them, thereafter they spoke at a level of
+ prargitive operations upon them, thereafter they spoke at a level of
  abstraction that encompassed both of their definitions.
 
  The moral of this fable is that:
@@ -39,12 +39,12 @@
 
 
 (*----------------------------------------------------------------------------*]
- Definirajte signaturo [NAT], ki določa strukturo naravnih števil. Ima osnovni 
+ Definirajte signaturo [NAT], ki določa strukturo naravnih števil. arga osnovni
  tip, funkcijo enakosti, ničlo in enko, seštevanje, odštevanje in množenje.
  Hkrati naj vsebuje pretvorbe iz in v OCamlov [int] tip.
 
- Opomba: Funkcije za pretvarjanje ponavadi poimenujemo [to_int] and [of_int],
- tako da skupaj z imenom modula dobimo ime [NAT.of_int], ki nam pove, da 
+ Opomba: Funkcije za pretvarjanje ponavadi poargenujemo [to_int] and [of_int],
+ tako da skupaj z argenom modula dobargo arge [NAT.of_int], ki nam pove, da
  pridobivamo naravno število iz celega števila.
 [*----------------------------------------------------------------------------*)
 
@@ -53,49 +53,89 @@ module type NAT = sig
 
   val eq   : t -> t -> bool
   val zero : t
-  (* Dodajte manjkajoče! *)
-  (* val to_int : t -> int *)
-  (* val of_int : int -> t *)
+  val one  : t
+  val add  : t -> t -> t
+  val sub  : t -> t -> t
+  val mul  : t -> t -> t
+  val of_int : int -> t
+  val to_int   : t -> int
+
 end
 
 (*----------------------------------------------------------------------------*]
- Napišite implementacijo modula [Nat_int], ki zgradi modul s signaturo [NAT],
+ Napišite argplementacijo modula [Nat_int], ki zgradi modul s signaturo [NAT],
  kjer kot osnovni tip uporablja OCamlov tip [int].
 
- Namig: Dokler ne implementirate vse funkcij v [Nat_int] se bo OCaml pritoževal.
- Temu se lahko izognete tako, da funkcije, ki še niso napisane nadomestite z 
+ Namig: Dokler ne argplementirate vse funkcij v [Nat_int] se bo OCaml pritoževal.
+ Temu se lahko izognete tako, da funkcije, ki še niso napisane nadomestite z
  [failwith "later"], vendar to ne deluje za konstante.
 [*----------------------------------------------------------------------------*)
 
 module Nat_int : NAT = struct
 
   type t = int
-  let eq x y = failwith "later"
+  let eq x y = x=y
   let zero = 0
-  (* Dodajte manjkajoče! *)
+  let one = 1
+  let add = (+)
+  let sub x y = max 0 (x-y)
+  let mul = ( * )
+  let of_int n = n
+  let to_int i = i
+
 
 end
 
 (*----------------------------------------------------------------------------*]
- Napišite implementacijo [NAT], ki temelji na Peanovih aksiomih:
+ Napišite argplementacijo [NAT], ki temelji na Peanovih aksiomih:
  https://en.wikipedia.org/wiki/Peano_axioms
-   
+
  Osnovni tip modula definirajte kot vsotni tip, ki vsebuje konstruktor za ničlo
  in konstruktor za naslednika nekega naravnega števila.
- Večino funkcij lahko implementirate s pomočjo rekurzije. Naprimer, enakost
- števil [k] in [l] določimo s hkratno rekurzijo na [k] in [l], kjer je osnoven
- primer [Zero = Zero].
+ Večino funkcij lahko argplementirate s pomočjo rekurzije. Naprarger, enakost
+ števil [k] in [l] določargo s hkratno rekurzijo na [k] in [l], kjer je osnoven
+ prarger [Zero = Zero].
 
 [*----------------------------------------------------------------------------*)
 
 module Nat_peano : NAT = struct
 
-  type t = unit (* To morate spremeniti! *)
-  let eq x y = failwith "later"
-  let zero = () (* To morate spremeniti! *)
-  (* Dodajte manjkajoče! *)
+  type t = Z | S of t (* zerro and successor *)
 
+  let rec eq x y =
+    match x,y with
+    |Z,Z -> true
+    |S x, S y -> eq x y
+    | _ , _ -> false
+  let zero = Z
+  let one = S Z
+
+  let rec add x  =function 
+  |Z->x
+  |S y->S (add x y)
+
+  let rec mul x = function
+  |Z ->Z
+  |S y -> add x (mul x y)
+
+  let rec sub x y = 
+    match x, y with 
+    | S x, S y -> sub x y
+    | _,Z -> x 
+    |Z,_ -> Z
+
+  let rec to_int = function
+    |Z -> 0
+    |S n -> 1+(to_int n )
+
+  let rec of_int i = if i<=0 then Z else S (of_int (i-1))
 end
+ ;;
+
+ let three = Nat_peano.of_int 3
+ let seven = Nat_peano.of_int 7
+
+(* 3 v tem zapisu pride kot S(S(S Z)) *)
 
 (*----------------------------------------------------------------------------*]
  V OCamlu lahko module podajamo kot argumente funkcij, z uporabo besede
@@ -103,9 +143,9 @@ end
 
  # let f (module M : M_sig) = ...
 
- in ji podajamo argumente kot 
+ in ji podajamo argumente kot
 
- # f (module M_implementation);;
+ # f (module M_argplementation);;
 
  Funkcija [sum_nat_100] sprejme modul tipa [NAT] in z uporabo modula sešteje
  prvih 100 naravnih števil. Ker funkcija ne more vrniti rezultata tipa [NAT.t]
@@ -118,7 +158,13 @@ end
  - : int = 4950
 [*----------------------------------------------------------------------------*)
 
-let sum_nat_100 (module Nat : NAT) = ()
+let  sum_nat_100 (module Nat : NAT) = 
+  let hundred = Nat.of_int 100 in 
+  let rec sum_x_100 x = 
+    if Nat.eq x hundred then hundred 
+    else Nat.add x (sum_x_100 (Nat.add x Nat.one))
+  in 
+  sum_x_100 Nat.zero |> Nat.to_int
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Now we follow the fable told by John Reynolds in the introduction.
@@ -126,35 +172,51 @@ let sum_nat_100 (module Nat : NAT) = ()
 
 (*----------------------------------------------------------------------------*]
  Definirajte signaturo modula kompleksnih števil.
- Potrebujemo osnovni tip, test enakosti, ničlo, enko, imaginarno konstanto i,
- negacijo, konjugacijo, seštevanje in množenje. 
+ Potrebujemo osnovni tip, test enakosti, ničlo, enko, argaginarno konstanto i,
+ negacijo, konjugacijo, seštevanje in množenje.
 [*----------------------------------------------------------------------------*)
 
 module type COMPLEX = sig
   type t
   val eq : t -> t -> bool
-  (* Dodajte manjkajoče! *)
+  val zero : t 
+  val one : t 
+  val i : t 
+  val neg :  t ->t
+  val conj : t -> t
+  val sum : t -> t->t 
+  val mul : t -> t -> t
 end
 
 (*----------------------------------------------------------------------------*]
- Napišite kartezično implementacijo kompleksnih števil, kjer ima vsako
- kompleksno število realno in imaginarno komponento.
+ Napišite kartezično argplementacijo kompleksnih števil, kjer arga vsako
+ kompleksno število realno in argaginarno komponento.
 [*----------------------------------------------------------------------------*)
 
 module Cartesian : COMPLEX = struct
 
-  type t = {re : float; im : float}
+  type t = {magn  : float; arg : float}
 
-  let eq x y = failwith "later"
-  (* Dodajte manjkajoče! *)
 
+  let zero = {magn = 0.; arg = 0.}
+  let i = {magn = 0.; arg = 1.}
+  let one = {magn = 1.; arg =0.}
+  
+  let eq x y = x.magn  = y.magn  && x.arg = y.arg
+  let neg x = {magn  = -.x.magn ;arg = -.x.arg}
+  let conj x = {magn  = x.magn ; arg = -.x.arg}
+
+  let sum x y= {magn  = x.magn  +. y.magn ; arg = x.arg +. y.arg}
+  let sub x y = {magn  = x.magn  -. y.magn ; arg = x.arg  -. y.arg}
+  let mul x y = {magn  = x.magn  *. y.magn  -. x.arg*.y.arg; arg = x.magn  *. y.arg +. y.magn  *. x.arg}
+  
 end
 
 (*----------------------------------------------------------------------------*]
- Sedaj napišite še polarno implementacijo kompleksnih števil, kjer ima vsako
+ Sedaj napišite še polarno argplementacijo kompleksnih števil, kjer arga vsako
  kompleksno število radij in kot (angl. magnitude in argument).
-   
- Priporočilo: Seštevanje je v polarnih koordinatah zahtevnejše, zato si ga 
+
+ Priporočilo: Seštevanje je v polarnih koordinatah zahtevnejše, zato si ga
  pustite za konec (lahko tudi za konec stoletja).
 [*----------------------------------------------------------------------------*)
 
@@ -167,8 +229,18 @@ module Polar : COMPLEX = struct
   let rad_of_deg deg = (deg /. 180.) *. pi
   let deg_of_rad rad = (rad /. pi) *. 180.
 
-  let eq x y = failwith "later"
-  (* Dodajte manjkajoče! *)
+  let zero = {magn= 0.; arg = 0.}
+  let i = {magn = 1.; arg = 90.}
+  let one = {magn = 1.; arg =0.}
+  
+  let eq x y = (x.magn =0. && y.magn =0.)||(x.magn = y.magn  && x.arg = y.arg)
+  let neg {magn; arg} = {magn; arg= arg+.180.}
+  let conj {magn;arg}  = {magn ; arg = arg +. 180.}
+
+  let sum x y= {magn  = x.magn  +. y.magn ; arg = x.arg +. y.arg}
+  let sub x y = {magn  = x.magn  -. y.magn ; arg = x.arg  -. y.arg}
+  let mul x y = {magn  = x.magn  *. y.magn ; arg =  y.arg +. x.arg}
+  
 
 end
 
@@ -177,11 +249,11 @@ end
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
 (*----------------------------------------------------------------------------*]
- Na vajah z iskalnimi drevesi smo definirali tip slovarjev 
- [('key, 'value) dict], ki je implementiral [dict_get], [dict_insert] in
- [print_dict]. Napišite primerno signaturo za slovarje [DICT] in naredite
- implementacijo modula z drevesi (kot na prejšnjih vajah). 
- 
+ Na vajah z iskalnargi drevesi smo definirali tip slovarjev
+ [('key, 'value) dict], ki je argplementiral [dict_get], [dict_insert] in
+ [print_dict]. Napišite prargerno signaturo za slovarje [DICT] in naredite
+ argplementacijo modula z drevesi (kot na prejšnjih vajah).
+
  Modul naj vsebuje prazen slovar [empty] in pa funkcije [get], [insert] in
  [print] (print naj ponovno deluje zgolj na [(string, int) t].
 [*----------------------------------------------------------------------------*)
