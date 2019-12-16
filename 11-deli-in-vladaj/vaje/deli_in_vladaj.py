@@ -1,3 +1,5 @@
+import random 
+
 ###############################################################################
 # Želimo definirati pivotiranje na mestu za tabelo [a]. Ker bi želeli
 # pivotirati zgolj dele tabele, se omejimo na del tabele, ki se nahaja med
@@ -27,6 +29,22 @@
 #     [10, 2, 0, 4, 11, 15, 17, 5, 18]
 ###############################################################################
 
+def pivot(a,start, end ) :
+    if end <= start :
+        return start
+   
+    first_larger = start + 1
+    for i in range(start, end+1):
+       if a[i] <a[start]:
+            a[first_larger], a[i] = a[i] , a[first_larger]
+            first_larger += 1 
+
+    a[start], a[first_larger-1] = a[first_larger-1], a[start]
+
+    return first_larger-1
+
+
+
 
 
 ###############################################################################
@@ -44,7 +62,28 @@
 # jo rešite brez da v celoti uredite tabelo [a].
 ###############################################################################
 
-
+def kth_el_with_loop(a,k):
+    lower = 0 
+    upper = len(a)-1
+    while True:
+        candidate_i = pivot(a,lower, upper)
+        if candidate_i ==k :
+            return a[candidate_i]
+        elif candidate_i <k : 
+            lower = candidate_i+1
+        else:
+            upper = candidate_i-1
+    
+def kth_element_with_recursion(a,k):
+    def kth(lower,upper):
+        candidate_i = pivot(a, lower, upper)
+        if candidate_i == k :
+            return a[candidate_i]
+        elif candidate_i <k :
+            return kth(candidate_i+1, upper)
+        else : 
+            return kth(lower,candidate_i-1)
+    return kth(0,len(a)-1)
 
 ###############################################################################
 # Tabelo a želimo urediti z algoritmom hitrega urejanja (quicksort).
@@ -59,6 +98,27 @@
 #     >>> quicksort(a)
 #     [2, 3, 4, 5, 10, 11, 15, 17, 18]
 ###############################################################################
+
+def quicksort(a):
+    def qsort (a,start,end):
+        if end<= start:
+            return 
+        p_i= pivot(a,start, end)
+        #sort smaller than pivot
+        qsort(a,start, p_i-1)
+        #sort bigger than pivot
+        qsort(a,p_i+1, end)
+    qsort(a, 0 ,len (a)-1)
+
+def test_quicksort():
+    for _ in range(1000):
+        a=[random.randint(-1000,100000)]
+        b1=a[:] # kopija seznama a, neodvisna kasneje od a 
+        b2=a[:]
+        quicksort(b1)
+        b2.sort()
+        if b1!=b2 :
+            return "Not working, try {}".format(a) 
 
 
 
@@ -84,6 +144,18 @@
 #     [1,1,2,3,3,4,5,5,6,7,7,10]
 #
 ###############################################################################
+def zlij(target,begin,end, list1,list2):
+    target = [-1 for _ in range(len(list1)+len(list2))]
+    i=0
+    for target[i] in target:
+        if list1[i]<= list2[i]: 
+            target[i]= list1[i]
+            target[i+1]= list2[i]
+        else: 
+            target[i]= list2[i]
+            target[i+1]= list1[i]
+        i+=2
+
 
 
 
