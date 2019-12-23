@@ -21,6 +21,40 @@ let test_matrix =
      [| 2 ; 4 ; 5 |];
      [| 7 ; 0 ; 1 |] |]
 
+let max_cheese cheese_matrix = 
+  let max_i = Array.length cheese_matrix in
+  let max_j = Array.length cheese_matrix.(0) in 
+  let max_matrix = Array.make_matrix max_i max_j 0 in 
+  let how_much cheese i j  =
+    let cheese = cheese_matrix.(i).(j) in 
+    if i < (max_i-1) then 
+      if j < (max_j-1) then cheese + max ( max_matrix.(i+1).(j)  max_martix(i).(j+1) )
+    else cheese + max_matrix.(i+1).(j)
+    else if j < (max_j-1) then cheese + max_martix(i).(j+1) 
+    else cheese
+  in
+  let how_much_cheese2 i j = 
+    let cheese = cheese_matrix.(i).(j) in 
+    let max_right = if j < (max_j -1) then max_matrix.(i).(j+1) else 0 in 
+    let max_down = if i < (max_i -1) then max_matrix.(i+1).(j) else 0 in
+      cheese+ max max_right max_down
+  in 
+  let rec loop i j = 
+  let cheese = how_much_cheese i j in 
+  let () = max_matrix.(i).(j) <- cheese in 
+    if j>0 then 
+      (* vse je ok  *)
+      loop i (j-1)
+    else
+        (* moramo skocit v novo vrstico   *)
+     	if i>0  then loop (i-1) (max_j-1) 
+      else ()
+
+  in 
+  let () = loop (max_i-1) (max_j-1) in max_matrix
+        
+
+
 (*----------------------------------------------------------------------------*]
  Rešujemo problem sestavljanja alternirajoče obarvanih stolpov. Imamo štiri
  različne tipe gradnikov, dva modra in dva rdeča. Modri gradniki so višin 2 in
@@ -36,6 +70,44 @@ let test_matrix =
  # alternating_towers 10;;
  - : int = 35
 [*----------------------------------------------------------------------------*)
+type color  = 
+|Red 
+|Blue
+        (* 1.establish bounds
+           2. make memory 
+           3. calculate one value by using recursion with memory 
+           4. loop oveer all values in the correct order
+           5. return result *)
+let alternating_towers h = 
+  let red_mem = Array.make (h+1) 0 in 
+  let blue_mem = Array.make (h+1) 0 in 
+  let red_bottom =
+    match h with 
+    |0 -> 0 
+    |1|2 -> 1
+    |h -> blue_mem.(h-1) + blue_mem.(h-2)
+  in 
+  let blue_bottom  = function
+ 
+    |0|1 -> 0
+    |2-> 1
+    |3-> 2
+    |h -> red_mem.(h-2)+red_mem(h-3)
+  in 
+  let rec loop n =
+    if n > h then () else 
+    let _ = red_mem.(n) <- red_bottom n in 
+    let _ = blue_mem.(n) <- blue_bottom n in 
+    loop (n+1)  
+  in 
+  let _ = loop 0 in  red_mem.(h)+blue_mem.(h)
+  
+
+
+
+
+
+
 
 
 (*----------------------------------------------------------------------------*]
