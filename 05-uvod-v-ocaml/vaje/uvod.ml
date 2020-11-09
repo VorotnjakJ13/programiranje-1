@@ -10,6 +10,9 @@
 
 let rec square k = k*k 
 
+let rec square = function
+  |x->x*x
+
 (*----------------------------------------------------------------------------*]
  Funkcija [middle_of_triple] vrne srednji element trojice.
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -17,10 +20,16 @@ let rec square k = k*k
  - : bool = false
 [*----------------------------------------------------------------------------*)
 
+
 let rec middle_of_triple triple = 
-  let(x,y,z)= triple in y
+  let (x,y,z)= triple in y
  
 let rec middle_of_triple' (x,y,z) = y
+
+let rec middle_of_triple'' triple = 
+    match triple with 
+    |(_,y,_)->y
+
 
 
 (*----------------------------------------------------------------------------*]
@@ -31,10 +40,13 @@ let rec middle_of_triple' (x,y,z) = y
  - : int = 1}
 [*----------------------------------------------------------------------------*)
 
+ (*za sezname VEDNO uporabljaš 'match with' *)
 let rec starting_element list = 
   match list with 
   |[] -> failwith "List is empty!"
   |x::xs -> x
+ (*  let rec starting_element x::xs = x 
+               ne bo dealalo ker v ta vzorec ni vključen [] . *)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [multiply] zmnoži vse elemente seznama. V primeru praznega seznama
@@ -44,6 +56,7 @@ let rec starting_element list =
  - : int = 48
 [*----------------------------------------------------------------------------*)
 
+ (*vedno veedno veeeedno, sezname delaš z MATCH WITH *)
 let rec multiply list = 
   match list with 
   | [] -> 1
@@ -122,7 +135,7 @@ let rec insert x k = function
 
 
 (*----------------------------------------------------------------------------*]
- Funkcija [divide k list] seznam razdeli na dva seznama. Prvi vsebuje prvih [k]
+Funkcija [divide k list] seznam razdeli na dva seznama. Prvi vsebuje prvih [k]
  elementov, drugi pa vse ostale. Funkcija vrne par teh seznamov. V primeru, ko
  je [k] izven mej seznama, je primeren od seznamov prazen.
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -134,7 +147,7 @@ let rec insert x k = function
 
 let rec divide k= function 
   | [] -> ([],[])
-  | x::xs when k<=0 -> ([],x::xs)
+  | x::xs when k <= 0 -> ([],x::xs)
   | x::xs (*k>0*) -> 
     let left, right = divide(k-1)xs in (x::left, right)
 
@@ -176,6 +189,7 @@ let rec remove x = function
   then remove x ys
   else y::remove x ys 
   | []-> []
+  
 
 (*----------------------------------------------------------------------------*]
  Funkcija [is_palindrome] za dani seznam ugotovi ali predstavlja palindrom.
