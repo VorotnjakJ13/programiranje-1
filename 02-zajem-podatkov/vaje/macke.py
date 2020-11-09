@@ -8,7 +8,7 @@ import orodja
 # Najprej definirajmo nekaj pomožnih orodij za pridobivanje podatkov s spleta.
 ###############################################################################
 
-# definiratje URL glavne strani bolhe za oglase z mačkami
+# definirajte URL glavne strani bolhe za oglase z mačkami
 cats_frontpage_url = 'http://www.bolha.com/zivali/male-zivali/macke/'
 # mapa, v katero bomo shranili podatke
 cat_directory = 'macke'
@@ -19,8 +19,14 @@ csv_filename = 'macke.csv'
 
 
 def download_url_to_string(url):
+<<<<<<< HEAD
     '''This function takes a URL as argument and tries to download it
     using requests. Upon success, it returns the page contents as string.'''
+=======
+    """Funkcija kot argument sprejme niz in poskusi vrniti vsebino te spletne
+    strani kot niz. V primeru, da med izvajanje pride do napake vrne None.
+    """
+>>>>>>> ab33ecdc6a13499689a83bbba238c675478c5c14
     try:
         page_content = requests.get(url).text()
         # del kode, ki morda sproži napako
@@ -64,10 +70,16 @@ def save_frontpage(url, directory, filename):
 
 
 def read_file_to_string(directory, filename):
+<<<<<<< HEAD
     '''Return the contents of the file "directory"/"filename" as a string.'''
     with open (csv_filename, 'r') as catsfile:
         data = catsfile.read()
     return data
+=======
+    """Funkcija vrne celotno vsebino datoteke "directory"/"filename" kot niz."""
+    raise NotImplementedError()
+
+>>>>>>> ab33ecdc6a13499689a83bbba238c675478c5c14
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja vsebino spletne strani,
 # in ga razdeli na dele, kjer vsak del predstavlja en oglas. To storite s
@@ -76,6 +88,7 @@ def read_file_to_string(directory, filename):
 
 
 def page_to_ads(page_content):
+<<<<<<< HEAD
     '''Split "page" to a list of advertisement blocks.'''
     #re.compile tvori niz podatkov, definira od kje do kje je en oglas
     #od div clas = ad do div clas = cleas . nato pride naslednji oglas.
@@ -85,10 +98,15 @@ def page_to_ads(page_content):
     oglasi = re.findall(oglas, page_content)
     return oglasi
     #re.findall vrne seznam nizov.
+=======
+    """Funkcija poišče posamezne oglase, ki se nahajajo v spletni strani in
+    vrne seznam oglasov."""
+    raise NotImplementedError()
+>>>>>>> ab33ecdc6a13499689a83bbba238c675478c5c14
 
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
-# podatke o imenu, ceni in opisu v oglasu.
+# podatke o imenu, lokaciji, datumu objave in ceni v oglasu.
 
 
 def get_dict_from_ad_block(oglas):
@@ -136,7 +154,7 @@ def write_csv(fieldnames, rows, directory, filename):
     """
     os.makedirs(directory, exist_ok=True)
     path = os.path.join(directory, filename)
-    with open(path, 'w') as csv_file:
+    with open(path, 'w', encoding='utf-8') as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
@@ -151,10 +169,8 @@ def write_csv(fieldnames, rows, directory, filename):
 
 def write_cat_ads_to_csv(ads, directory, filename):
     """Funkcija vse podatke iz parametra "ads" zapiše v csv datoteko podano s
-    parametroma "directory"/"filename". Funkcija predpostavi, da sa ključi vseh
-    sloverjev parametra ads enaki in je seznam ads neprazen.
-
-    """
+    parametroma "directory"/"filename". Funkcija predpostavi, da so ključi vseh
+    slovarjev parametra ads enaki in je seznam ads neprazen."""
     # Stavek assert preveri da zahteva velja
     # Če drži se program normalno izvaja, drugače pa sproži napako
     # Prednost je v tem, da ga lahko pod določenimi pogoji izklopimo v
@@ -175,12 +191,12 @@ def main(redownload=True, reparse=True):
 
     # Iz lokalne (html) datoteke preberemo podatke
 
-    # Podatke prebermo v lepšo obliko (seznam slovarjev)
+    # Podatke preberemo v lepšo obliko (seznam slovarjev)
 
     # Podatke shranimo v csv datoteko
 
-    # Dodatno: S pomočjo parameteov funkcije main omogoči nadzor, ali se
-    # celotna spletna stran ob vsakem zagon prense (četudi že obstaja)
+    # Dodatno: S pomočjo parametrov funkcije main omogoči nadzor, ali se
+    # celotna spletna stran ob vsakem zagon prenese (četudi že obstaja)
     # in enako za pretvorbo
 
     raise NotImplementedError()

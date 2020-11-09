@@ -25,11 +25,13 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # >>> find_words(test_text, 'de')
 # {'izdere', 'debel', 'oddide', 'začudeno'}
 ###############################################################################
+import re
+niz='de'
 def find_words(test_text, niz):
   vse_besede = r'\b\w*'+ niz+r'\w*\b'
   return set(re.findall(vse_besede, test_text))
 
-
+t1=find_words(test_text,niz)
 
 ###############################################################################
 # 2) Sestavite funkcijo [find_prefix], ki vrne množico vseh besed, ki se
@@ -38,16 +40,25 @@ def find_words(test_text, niz):
 # >>> find_prefix(test_text, 'zi')
 # {'zibala', 'zibel', 'zibelko'}
 ###############################################################################
+niz = 'zi'
+def  find_prefix(test_text,niz):
+  vzorec = r'\b'+niz+r'\w*\b'
+  return set(re.findall(vzorec, test_text))
 
-
-###############################################################################
+t2=find_prefix( test_text,niz)
+#######################################fin########################################
 # 3) Sestavite funkcijo [find_suffix], ki vrne množico vseh besed, ki se
 #    pojavijo v nizu in imajo dano pripono.
 #
 # >>> find_suffix(test_text, 'la')
 # {'zibala', 'razveselila', 'prestrašila', 'šivala', 'opazila', 'tla'}
 ###############################################################################
+niz='la'
+def find_suffix(test_text,niz):
+  vzorec=r'\b\w+'+niz+r'\b'
+  return set(re.findall(vzorec,test_text))
 
+t3=find_suffix(test_text,niz)
 
 ###############################################################################
 # 4) Sestavite funkcijo [double_letters], ki sprejme niz in vrne množico vseh
@@ -56,3 +67,9 @@ def find_words(test_text, niz):
 # >>> double_letters('A volunteer is worth twenty pressed men.')
 # {'volunteer', 'pressed'}
 ###############################################################################
+
+niz='A volunteer is worth twenty pressed men.'
+def  double_letters(niz):
+  vzorec=r'(\b\w*(\w)\2\w*\b)'  ## PODVOJEVANJE besednih ZNAKOV
+  return set( element[0] for element in re.findall(vzorec,niz) )
+t4=double_letters(niz)
