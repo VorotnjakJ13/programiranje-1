@@ -165,6 +165,7 @@ let rec divide k= function
 let rec rotate n = function
   | [] ->[]
   | x::xs -> if n<=0 then x::xs else rotate (n-1) ( xs @[x]) 
+  
   (*  @ stakne dva seznama skupej  *)
 
 
