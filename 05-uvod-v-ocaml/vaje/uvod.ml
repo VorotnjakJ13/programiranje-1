@@ -20,12 +20,18 @@ let rec square = function
  - : bool = false
 [*----------------------------------------------------------------------------*)
 
-
+(*prva varianta*)
 let rec middle_of_triple triple = 
   let (x,y,z)= triple in y
- 
+
+(*druga varianta*)
+let rec middle_of_triple''' =function
+  |(_,y,_)-> y
+
+(*tretja varianta*)
 let rec middle_of_triple' (x,y,z) = y
 
+(*četrta varianta*)
 let rec middle_of_triple'' triple = 
     match triple with 
     |(_,y,_)->y
@@ -40,13 +46,26 @@ let rec middle_of_triple'' triple =
  - : int = 1}
 [*----------------------------------------------------------------------------*)
 
- (*za sezname VEDNO uporabljaš 'match with' *)
+(*za sezname VEDNO uporabljaš 'match with' *)
 let rec starting_element list = 
   match list with 
   |[] -> failwith "List is empty!"
   |x::xs -> x
  (*  let rec starting_element x::xs = x 
                ne bo dealalo ker v ta vzorec ni vključen [] . *)
+let rec starting_element' = function
+  |[]-> failwith "List is empty!"
+  |x::xs-> x
+ (*
+let rec predzadnji_element list = 
+  match list with
+  |[]->failwith "Prazen seznam!"
+  |x::xs ->
+    match xs with
+    |[]-> failwith "Enoeelementen seznam."
+    |y::ys ->  predzadnji_element xs
+*)
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [multiply] zmnoži vse elemente seznama. V primeru praznega seznama
