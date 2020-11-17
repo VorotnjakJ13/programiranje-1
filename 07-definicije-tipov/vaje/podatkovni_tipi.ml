@@ -22,15 +22,26 @@
 [*----------------------------------------------------------------------------*)
 
 type euro = Euro of float
-
 let euro_test = Euro 0.4305
+
 type dollar = Dollar of float
 let dollar_test = Dollar 0.5
+
+type kuna = Kuna of float
+let kuna_test = Kuna 6.
+(*pretvorbe*)
 let dollar_to_euro  d = 
   match d with
-  |Dollar f -> Euro (0.91*.f)
+  |Dollar x -> Euro (0.91*.x)
 
-let dollar_to_euro (Dollar f) = Euro (0.91*.f)
+let dollar_to_euro (Dollar x) = Euro (0.91*.x)
+let euro_to_dollar ( Euro x)= Dollar ( 1.18*.x)
+let euro_to_kuna d = 
+  match d with 
+  |Euro x -> Kuna(7.53*.x)
+  (*krajše*)
+let euro_to_kuna' (Euro x)= Kuna (7.53*.x)
+let kuna_to_euro' (Kuna x)= Euro ( 0.13*.x)
 
 
 (*----------------------------------------------------------------------------*]
@@ -47,16 +58,16 @@ let dollar_to_euro (Dollar f) = Euro (0.91*.f)
 
 type currency = 
   |Yen of float|Pound of float|Krona of float|Tolar of float 
-
+(* delaš s floati, nepozabi na pike*)
 let to_yen = function
-  |Pound f -> Yen (f *. 0.2)
-  |Yen f-> Yen f
-  |Krona f-> Yen(f*. 2.3)
-  |Tolar f-> Yen(f*. 3.4)
+  |Pound x -> Yen (x *. 0.2)
+  |Yen x-> Yen x (*moraš dodat še tega, sicer da pattern mach not exhaustive*)
+  |Krona x-> Yen(x*. 2.3)
+  |Tolar x-> Yen(x*. 3.4)
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Želimo uporabljati sezname, ki hranijo tako cela števila kot tudi logične
- vrednosti. To bi lahko rešili tako da uvedemo nov tip, ki predstavlja celo
+ vrednosti (bool). To bi lahko rešili tako da uvedemo nov tip, ki predstavlja celo
  število ali logično vrednost, v nadaljevanju pa bomo raje konstruirali nov tip
  seznamov.
 
@@ -64,10 +75,6 @@ let to_yen = function
  [Nil] (oz. [] v Ocamlu) in pa konstruktorjem za člen [Cons(x, xs)] (oz.
  x :: xs v Ocamlu).
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
-
-
-
-
 
 (*----------------------------------------------------------------------------*]
  Definirajte tip [intbool_list] z konstruktorji za:
@@ -79,30 +86,37 @@ let to_yen = function
 [*----------------------------------------------------------------------------*)
 
 type intbool_list=
-|Nil|Int of int*intbool_list|Bool of bool*intbool_list
+|Nil|Int of int*intbool_list|Bool of bool*intbool_list 
+(*INT OF INT*INTBOOL_LIST
+vrednost krat mesto v seznamu ? *)
 
 let test= Int(5,Bool(true,Bool(false,Int(7,Nil))))
 
+(* test2 = [true;3;true;false;4;false]*)
+let test2 = Bool(true,Int(3,Bool(true,Bool(false,Int(4,Bool(false,Nil))))))
 
-(*----------------------------------------------------------------------------*]
+(*--------------------------------------------------------------------------*]
  Funkcija [intbool_map f_int f_bool ib_list] preslika vrednosti [ib_list] v nov
  [intbool_list] seznam, kjer na elementih uporabi primerno od funkcij [f_int]
  oz. [f_bool].
 [*----------------------------------------------------------------------------*)
-
-let rec intbool_map f_int f_bool ib_list = 
-  match ib_list with 
-  |Nil -> Nil
-  |Int(i,ib_list) -> Int(f_int i, intbool_map f_int f_bool ib_list)
-  |Bool(b,ib_list) -> Bool(f_bool b, intbool_map f_int f_bool ib_list)
-
+ (* vsakemu elementu v seznamu pripredi ustreznofunkcijsko vrednosti in novo mesto v novem seznamu*)
+let rec intbool_map f_int f_bool ib_list=
+  match ib_list with
+  |Nil -> Nil (*prazen sesnam*)
+  |Int(x,ib_list) -> Int(f_int x, intbool_map f_int f_bool ib_list)
+  |Bool(x,ib_list) -> Bool(f_bool x, intbool_map f_int f_bool ib_list)
+(*preslika vrednost s funkcijo f_  v f_ x in nato še priredi mesto v seznamu
+ib_list --> intbool_map f_int f_bool ib_list *)
 
 let rec intbool_list f_int f_bool = 
-   let rec mapper = function 
+   let rec mapper = function (* pomožna funkcija*)
    |Nil -> Nil
-   |Int(i,ib_list)-> Int(f_int i , mapper ib_list)
-   |Bool(b,ib_list)-> Bool(f_bool b, mapper ib_list)
+   |Int(x,ib_list)-> Int(f_int x, mapper ib_list)
+   |Bool(x,ib_list)-> Bool(f_bool x, mapper ib_list)
    in mapper
+(*ali morajo biti tukej različne oznake, i, b, ali je lahko samo x ? *)
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [intbool_reverse] obrne vrstni red elementov [intbool_list] seznama.
