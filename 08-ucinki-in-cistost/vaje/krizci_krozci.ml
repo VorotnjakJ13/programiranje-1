@@ -21,7 +21,7 @@
  Namig: Najlažje je, da igralca poimenujete kar glede na simbol.
 [*----------------------------------------------------------------------------*)
 
-type player = unit  (* DOPOLNI ME *)
+type player = X | O
 
 (*----------------------------------------------------------------------------*]
  Igralno mrežo predstavimo s trojico vrstic, kjer je vsaka vrstica trojica polj.
@@ -32,23 +32,26 @@ type player = unit  (* DOPOLNI ME *)
 
  Namig: Vaša koda bo lepša, če definirate še dodatne tipe.
 [*----------------------------------------------------------------------------*)
-
-type grid = unit  (* DOPOLNI ME *)
+type field = player option
+type row = field * field * field
+type grid = row * row * row
 
 (*----------------------------------------------------------------------------*]
  Definirajte vrednost, ki predstavlja prazno mrežo.  
 [*----------------------------------------------------------------------------*)
 
-let empty_grid : grid = () (* DOPOLNI ME *)
+let empty_grid : grid = 
+  let empty_row : row = (None, None, None) in 
+  (empty_row, empty_row,empty_row)
 
 (*----------------------------------------------------------------------------*]
  Ker je mreža fiksne velikosti 3x3 lahko definiramo poseben tip za številčenje.
  Če bi uporabljali celoštevilski tip [int] bi morali stalno preverjati, ali
  smo v mejah mreže, čemur se izognemo z uporabo tipa [index]
 [*----------------------------------------------------------------------------*)
-
+(* s tem ne rabiš preverjat če si vn padu. ker imamo 3x3 to deluje*)
 type index = Zero | One | Two
-
+(* za poljubno velike mreže to ne gre*)
 (*----------------------------------------------------------------------------*]
  Funkcija [get_index] sprejme [index] in trojico, ter vrne primerni element
  trojice.
@@ -57,10 +60,17 @@ type index = Zero | One | Two
  trojico, ki ima primerno polje posodobljeno na podano vrednost.
 [*----------------------------------------------------------------------------*)
 
-let get_index index (x0, x1, x2) = failwith "DOPOLNI ME"
+let get_index index (x0, x1, x2) = 
+  match index with 
+  |Zero -> x0
+  |One -> x1
+  |Two -> x2
 
-let set_index index x (x0, x1, x2) = failwith "DOPOLNI ME"
-
+let set_index index x (x0, x1, x2) = 
+match index with 
+  | Zero -> x
+  |One -> x
+  |Two -> x
 (*----------------------------------------------------------------------------*]
  Funkcija [get_field] vrne vrednost polja v mreži, ki ga določata podana
  indeksa.
@@ -85,7 +95,9 @@ let set_field (row_i : index) (col_i : index) x grid =
  funkcija [is_full_grid] pa preveri zapolnjenost mreže.
 [*----------------------------------------------------------------------------*)
 
-let is_full_row row = failwith "DOPOLNI ME"
+let is_full_row row = function
+  |Some _ , Some _ , Some _ -> true
+  |_ -> false
 
 let is_full_grid grid =
     let (r1, r2, r3) = grid in
@@ -237,7 +249,7 @@ let show_state = function
  (stolpec ali vrstico). Nato prebere izbiro, in jo poskusi pretvoriti v indeks.
  Če vnos ni primeren, proces ponovi.
 [*----------------------------------------------------------------------------*)
-let string_to_index = failwith "DOPOLNI ME"
+let string_to_index str = failwith "DOPOLNI ME"
 
 let rec choose kind =
   (* Sporočilo kaj želimo. *)
