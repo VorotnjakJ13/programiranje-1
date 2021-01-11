@@ -16,6 +16,12 @@ let rec randlist len max =
     in 
     listgen len []
 
+let rec randlist' len max = 
+    if len <= 0 then []
+    else 
+        let x = Random.int max in 
+        x::(randlist' (len-1) max)
+
 
 
 
@@ -27,6 +33,10 @@ let rec randlist len max =
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  let test = (randlist 100 100) in (our_sort test = List.sort compare test);;
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
+
+let default_test our_sort = 
+    let test = randlist 100 100 in our_sort test = List.sort compare test
+
 
 let rec tester our_sort len =
 (* Pove ali funkcija our_sort pravilno uredi nakljucni seznam dolzine [len], vrne true ali false *)
@@ -80,7 +90,7 @@ let rec insert_sort_tlrec xs =
     let rec sort' acc = function 
     |[]-> acc
     |x::xs -> sort' (insert_tlrec x acc) xs 
-    in sort' [] xs 
+    in sort' [] xs
 
 (*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*]
  Urejanje z Izbiranjem
@@ -91,6 +101,29 @@ let rec insert_sort_tlrec xs =
  najmanjši element v [list] in seznam [list'] enak [list] z odstranjeno prvo
  pojavitvijo elementa [z]. V primeru praznega seznama vrne [None]. 
 [*----------------------------------------------------------------------------*)
+
+let rec min_rst list = 
+    let rec aux min rest = function
+    |[] ->(min,rest)
+    |x::xs ->
+        if x<min then aux x (min::rest) xs
+        else aux min (x::rest) xs
+    in match list with 
+    |[] -> None
+    |x::xs -> Some(aux x [] xs)
+
+let rec min_and_rest2020 list = 
+    match list with  
+    |[] ->None
+    |x::xs ->
+        let rec min_x = List.fold_left min x xs in 
+        let rec remove_min = function 
+        |[] -> []
+        |y::ys when y = min_x-> ys
+        |y::ys (*y<>min_x*) -> y::(remove_min ys)
+        in Some(min_x ,remove_min list) 
+
+
 let rec min_and_rest = function 
     |[] ->None
     |x::xs ->
@@ -143,8 +176,12 @@ let rec selection_sort xs =
      |None-> []
      |Some(m,rest) -> m:: selection_sort rest
 
-
-
+let rec selection_sort2020 list = 
+    let rec selection_loop sorted_list list = 
+        match min_and_rest list with 
+        |Some(min,rest)-> selection_loop (min :: sorted_list ) rest
+        |None ->List.rev sorted_list (*obrne list*)
+    in selection_loop [] list
 (*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*]
  Urejanje z Izbiranjem na Tabelah
 [*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*)
@@ -159,6 +196,12 @@ let rec selection_sort xs =
  elementom na meji med deloma (in s tem dodamo na konec urejenega dela).
  Postopek končamo, ko meja doseže konec tabele.
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
+(*
+
+Array.fold_left;;
+Array.iter;;  
+ 
+*)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [swap a i j] zamenja elementa [a.(i)] and [a.(j)]. Zamenjavo naredi
@@ -173,7 +216,7 @@ let rec selection_sort xs =
 [*----------------------------------------------------------------------------*)
 
 
-let swap a i j = 
+let swap a i j = (*enega si zapomnis preden zamenjas*)
     let ai = a.(i) in 
     a.(i)<-a.(j) ;
     a.(j)<-ai
@@ -199,8 +242,6 @@ let index_min a lower upper =
     search i (i+1)
     else search mini (i+1)
     in search lower lower
-
-
 
 (*----------------------------------------------------------------------------*]
  Funkcija [selection_sort_array] implementira urejanje z izbiranjem na mestu. 

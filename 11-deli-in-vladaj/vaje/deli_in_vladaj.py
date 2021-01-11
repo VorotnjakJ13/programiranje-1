@@ -29,6 +29,21 @@ import random
 #     [10, 2, 0, 4, 11, 15, 17, 5, 18]
 ###############################################################################
 
+def pivot1(a, start, fin):
+    if start >= end: return start
+    
+    p = a[start]  #pivot
+    prvi_vecji = start + 1
+    for i in range(start + 1, fin + 1):
+        if a[i] < p:
+            a[i], a[prvi_vecji] = a[prvi_vecji], a[i]
+            #med [prvi_vecji] in [i] so samo elmnti manjsi od [p].
+            prvi_vecji += 1
+        p, a[prvi_vecji - 1] = a[prvi_vecji - 1], p
+        #vstavimo pivot na pravo mesto.
+    return prvi_vecji-1 # indeks pivota
+
+
 def pivot(a,start, end ) :
     if end <= start :
         return start
@@ -63,16 +78,18 @@ def pivot(a,start, end ) :
 ###############################################################################
 
 def kth_el_with_loop(a,k):
-    lower = 0 
-    upper = len(a)-1
+    manjsi = 0 #indeks
+    vecji = len(a)-1
     while True:
-        candidate_i = pivot(a,lower, upper)
-        if candidate_i ==k :
-            return a[candidate_i]
-        elif candidate_i <k : 
-            lower = candidate_i+1
+        kandidat_i = pivot(a, manjsi, vecji)
+        # vrne indeks pivota , vse elmnte (med prvim in zadnjim)v tabeli in jih zamenja , 
+        # tako da je so najprej tisti ki so manjsi od pivota , nato pivot, nato pa tisti ki so večji od pivota
+        if kandidat_i ==k : # če prideš do ktega najmanjsega v tabeli
+            return a[kandidat_i]
+        elif kandidat_i <k : #če je manj kot kti najmanjši el. pogledamo naslednjega
+            manjsi = kandidat_i+1 # postaviga na levo od pivota
         else:
-            upper = candidate_i-1
+            vecji=kandidat_i-1 # če je večji od pivota, ga damo na levo od pivota
     
 def kth_element_with_recursion(a,k):
     def kth(lower,upper):

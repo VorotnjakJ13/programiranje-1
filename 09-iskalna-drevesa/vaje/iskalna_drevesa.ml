@@ -7,7 +7,7 @@
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 type 'a tree = 
      |Empty
-     |Node of 'a tree*'a*'a tree
+     |Node of 'a tree * 'a * 'a tree
 
 (*----------------------------------------------------------------------------*]
  Definirajmo si testni primer za preizkušanje funkcij v nadaljevanju. Testni
@@ -79,16 +79,16 @@ let rec height = function
  - : int list = [0; 2; 5; 6; 7; 11]
 [*----------------------------------------------------------------------------*)
 let rec list_of_tree = function 
-|Empty -> []
-|Node (lt,x,rt) -> (list_of_tree lt) @ [x] @ (list_of_tree rt)
+  |Empty -> []
+  |Node (lt,x,rt) -> (list_of_tree lt) @ [x] @ (list_of_tree rt)
 
-
+(*zgornja funkcija na široko razpisana*)
 let rec list_of_tree2 = function 
-|Empty -> []
-|Node(lt,x,rt) -> 
-  let left_list = list_of_tree2 lt in 
-  let right_list = list_of_tree2 rt in 
-  left_list @ [x] @ right_list
+  |Empty -> []
+  |Node(lt,x,rt) -> 
+    let left_list = list_of_tree2 lt in 
+    let right_list = list_of_tree2 rt in 
+    left_list @ [x] @ right_list
 
 (*----------------------------------------------------------------------------*]
  Funkcija [is_bst] preveri ali je drevo binarno iskalno drevo (Binary Search 
@@ -100,16 +100,20 @@ let rec list_of_tree2 = function
  # test_tree |> mirror |> is_bst;;
  - : bool = false
 [*----------------------------------------------------------------------------*)
-(* 
+
 let rec is_BST = function 
 |Empty -> true 
-|Node(lt,x,rt) -> (list_of_tree Node(lt,x,rt)).sort = list_of_tree Node(lt,x,rt)
- *)
+|Node(lt,x,rt) -> list_of_tree (Node(lt,x,rt)) = (List.sort compare (list_of_tree (Node(lt,x,rt))))
+
+(* List.sort compare seznam
+    List.stable_sort compare seznam
+    List.fast_sort compare seznam
+    ..... uredi sezname kot v pythonu. COMPARE !! NE TVORI NOVEGA SEZNAMA ! *)
 
 let  is_bst tree= 
-  let rec list_is_ord = function 
+  let rec list_is_ord = function (**delamo na seznamih zdj*)
     | [] |[_] -> true
-    |x::x'::xs -> x <= x' && list_is_ord (x'::xs)
+    |x::x'::xs ->  if x <= x' && list_is_ord (x'::xs) then true else false
   in  tree |> list_of_tree |> list_is_ord
 
 
@@ -140,6 +144,26 @@ let is_Bst tree =
     in 
     is_Bst None None tree
 
+    (*LETOŠNJA REŠITEV*)
+let is_bst' tree = 
+  let rec within_bounds low high = function
+  |Empty -> true 
+  |Node(lt,x,rt)-> 
+    let low_bound_ok = 
+      match low with 
+      |Some l -> l<x
+      |None -> true
+    in 
+    let high_bound_ok = 
+      match high with 
+      |Some h -> x<h
+      |None -> true
+    in 
+    low_bound_ok && high_bound_ok 
+    &&(within_bounds low (Some x) lt)
+    && (within_bounds (Some x) high rt)
+  in 
+  within_bounds None None tree
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  V nadaljevanju predpostavljamo, da imajo dvojiška drevesa strukturo BST.
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
@@ -153,34 +177,39 @@ let is_Bst tree =
  # member 3 test_tree;;
  - : bool = false
 [*----------------------------------------------------------------------------*)
-let rec insert x = function 
+let rec insert x tree = 
+  match tree with 
   |Empty -> leaf x 
-  |Node(lt,y,rt) when  x < y -> Node (insert x lt ,y, rt)
-  |Node(lt,y,rt) -> Node( lt, y, insert x rt)
+  |Node(lt,y,rt) when  x <= y -> 
+    Node (insert x lt ,y, rt)
+  |Node(lt,y,rt) -> 
+    Node( lt, y, insert x rt)
 
  let rec member x = function 
   |Empty -> false 
   |Node(lt,y,rt)  when x = y -> true 
   |Node(lt,y,rt) when x<y -> member x lt 
-  |Node(lt,y,rt) ->  member x rt  
-(* zadnjega ne primerjaš, tako da zavzames vse preostale vrenosti in se Ocaml ne pritoži  *)
+  |Node(lt,y,rt) ->  member x rt   
+(* zadnjega ne primerjaš, 
+tako da zavzames vse preostale vrenosti in se Ocaml ne pritoži  *)
 
   (* || logicni operarot OR , | sintaktično naštevanje = operator  *)
 
 
 
-
+ (*glede na globino drevesa, manj kot velikost drevesa.manj kot linearna čas.odv.*)
 (*----------------------------------------------------------------------------*]
  Funkcija [member2] ne privzame, da je drevo bst.
  
  Opomba: Premislte kolikšna je časovna zahtevnost funkcije [member] in kolikšna
  funkcije [member2] na drevesu z n vozlišči, ki ima globino log(n). 
 [*----------------------------------------------------------------------------*)
-let member2 x  = function 
+let rec member2 x  = function 
  |Empty -> false 
- |Node(lt,y,rt) -> x = y ||member x lt || member x rt  
+ |Node(lt,y,rt) -> x = y ||member2 x lt || member2 x rt  
+ (*  glede na velikost drevesa, (size, število listov) .. linearna časovna odvisnost*)
 
-(*----------------------------------------------------------------------------*]
+ (*----------------------------------------------------------------------------*]
  Funkcija [succ] vrne naslednjika korena danega drevesa, če obstaja. Za drevo
  oblike [bst = Node(l, x, r)] vrne najmanjši element drevesa [bst], ki je večji
  od korena [x].
@@ -192,7 +221,18 @@ let member2 x  = function
  # pred (Node(Empty, 5, leaf 7));;
  - : int option = None
 [*----------------------------------------------------------------------------*)
+let rec min_el = function 
+  |Empty -> None
+  |Node(Empty,x,rt) -> Some x
+  |Node(lt,x,rt)-> min_el lt 
 
+let rec succ = function 
+  |Empty -> None 
+  |Node ( lt, x,rt) -> min_el rt
+
+let rec pred = function 
+  |Empty -> None
+  |Node(lt,x,rt)-> pred lt
 
 (*----------------------------------------------------------------------------*]
  Na predavanjih ste omenili dva načina brisanja elementov iz drevesa. Prvi 
@@ -206,22 +246,17 @@ let member2 x  = function
  Node (Node (Node (Empty, 0, Empty), 2, Empty), 5,
  Node (Node (Empty, 6, Empty), 11, Empty))
 [*----------------------------------------------------------------------------*)
-
-let rec min_el = function 
+(*
+let rec min_el2 = function 
   |Empty -> None 
   |Node(lt,x,rt) ->
-    match min_el lt with 
+    match min_el2 lt with 
     |None -> Some x
-    |Some y -> Some y
+    |Some y -> Some y *)
 
-let rec min_el2 = function 
-  |Empty -> None
-  |Node(Empty,x,rt) -> Some x
-  |Node(lt,x,rt)-> min_el2 lt 
 
-let succ = function 
-  |Empty-> None 
-  |Node (lt, x,rt )-> min_el rt
+
+
 
 let rec delete y = function 
   |Empty -> Empty 
@@ -229,11 +264,23 @@ let rec delete y = function
   |Node(lt,x,rt) when x<y -> Node (lt, x, delete x rt)
   |Node(lt,x,rt) as bst(*x=y *) -> 
     match succ bst with 
-    |Some s -> Node(lt,s,delete s rt) 
+    |Some z -> Node(lt,z,delete z rt) 
     (*v desnem poddrevesu se s se enkrat napise zato je ga treba pobrisat, sicer nemoremo sestaviti drevesa*)
     (*če nek succ najdemo*)
     (*kaj naredimo če ga ne najdemo : *)
     |None -> (*vemo da je rt=Empty *) lt 
+
+
+
+    let rec delete y = function 
+    |Empty -> Empty 
+    |Node(lt,x,rt) when y<x -> Node(delete y lt, x, rt)
+    |Node(lt,x,rt) when x<y -> Node (lt, x, delete x rt)
+    |Node(lt,x,rt) as bst(*x=y *) -> 
+      match succ bst with 
+      |Some z -> Node(lt,z,delete z rt) 
+      |None ->  lt 
+
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  SLOVARJI
 
