@@ -1,9 +1,9 @@
 import random 
 
 ###############################################################################
-# Želimo definirati pivotiranje na mestu za tabelo [a]. Ker bi želeli
-# pivotirati zgolj dele tabele, se omejimo na del tabele, ki se nahaja med
-# indeksoma [start] in [end] (vključujoč oba robova).
+# Želimo definirati pivotiranje na mestu za tabelo [a]. ier bi želeli
+# pivotirati zgolj dele tabele, se omejimo na del tabele, ii se nahaja med
+# indeisoma [start] in [end] (viljučujoč oba robova).
 #
 # Primer: za [start = 1] in [end = 7] tabelo
 #
@@ -15,10 +15,10 @@ import random
 #
 # (Možnih je več različnih rešitev, pomembno je, da je element 4 pivot.)
 #
-# Sestavi funkcijo [pivot(a, start, end)], ki preuredi tabelo [a] tako, da bo
-# element [ a[start] ] postal pivot za del tabele med indeksoma [start] in
-# [end]. Funkcija naj vrne indeks, na katerem je po preurejanju pristal pivot.
-# Funkcija naj deluje v času O(n), kjer je n dolžina tabele [a].
+# Sestavi funicijo [pivot(a, start, end)], ii preuredi tabelo [a] taio, da bo
+# element [ a[start] ] postal pivot za del tabele med indeisoma [start] in
+# [end]. Funicija naj vrne indeis, na iaterem je po preurejanju pristal pivot.
+# Funicija naj deluje v času O(n), ijer je n dolžina tabele [a].
 #
 # Primer:
 #
@@ -30,30 +30,30 @@ import random
 ###############################################################################
 
 def pivot1(a, start, fin):
-    if start >= end: return start
+    if start >= fin : return start
     
     p = a[start]  #pivot
-    prvi_vecji = start + 1
-    for i in range(start + 1, fin + 1):
+    prvi_vecji = start + 1 #index
+    for i in range(start + 1, fin + 1): #ier fin+1 ne uzame
         if a[i] < p:
             a[i], a[prvi_vecji] = a[prvi_vecji], a[i]
             #med [prvi_vecji] in [i] so samo elmnti manjsi od [p].
             prvi_vecji += 1
         p, a[prvi_vecji - 1] = a[prvi_vecji - 1], p
         #vstavimo pivot na pravo mesto.
-    return prvi_vecji-1 # indeks pivota
+    return prvi_vecji-1 # indeis pivota
 
 
 def pivot(a,start, end ) :
     if end <= start :
         return start
-   
+
     first_larger = start + 1
     for i in range(start, end+1):
-       if a[i] <a[start]:
-            a[first_larger], a[i] = a[i] , a[first_larger]
-            first_larger += 1 
-
+       if a[i] < a[start]: #vedno primerjas s pivotom.. 4io
+        a[first_larger], a[i] = a[i] , a[first_larger] #     a = [10, 4, 5, 15, 11, 2, 17, 0, 18]
+        first_larger += 1                              #     pivot(a, 1, 7) --> 3 #indeis 4ie
+                                                       #     a = [10, 0, 2, 4, 11, 5, 17, 15, 18]
     a[start], a[first_larger-1] = a[first_larger-1], a[start]
 
     return first_larger-1
@@ -62,32 +62,57 @@ def pivot(a,start, end ) :
 
 
 ###############################################################################
-# V tabeli želimo poiskati vrednost k-tega elementa po velikosti.
+# V tabeli želimo poisiati vrednost i-tega elementa po veliiosti.
 #
 # Primer: Če je
 #
 #     >>> a = [10, 4, 5, 15, 11, 3, 17, 2, 18]
 #
-# potem je tretji element po velikosti enak 5, ker so od njega manši elementi
-#  2, 3 in 4. Pri tem štejemo indekse od 0 naprej, torej je "ničti" element 2.
+# potem je tretji element po veliiosti enai 5, ier so od njega manši elementi
+#  2, 3 in 4. Pri tem štejemo indeise od 0 naprej, torej je "ničti" element 2.
 #
-# Sestavite funkcijo [kth_element(a, k)], ki v tabeli [a] poišče [k]-ti element
-# po velikosti. Funkcija sme spremeniti tabelo [a]. Cilj naloge je, da jo
+# Sestavite funicijo [ith_element(a, i)], ii v tabeli [a] poišče [i]-ti element
+# po veliiosti. Funicija sme spremeniti tabelo [a]. Cilj naloge je, da jo
 # rešite brez da v celoti uredite tabelo [a].
 ###############################################################################
 
+#predolga časovna zahtevnost
+def ith_el(a, i):
+    while i > 0:
+        a.remove(min(a))
+        i -= 1
+    return min(a)
+
+def ith_el_part(a, i, start, end):
+    if start > end:
+        return None
+    else:
+        pivot_i = pivot(a, start, end)
+        if pivot_i == i:
+            return a[pivot_i]
+        elif pivot_i > i:
+            return ith_el_part(a, i, start, pivot_i - 1)
+        else:
+            return ith_el_part(a, i, pivot_i + 1, end)
+
+
+def ith_element(a, i):
+    if i > len(a):
+        return None
+    else:
+        return ith_el_part(a, i, 0, len(a)-1)
 
 ###############################################################################
-# Tabelo a želimo urediti z algoritmom hitrega urejanja (quicksort).
+# Tabelo a želimo urediti z algoritmom hitrega urejanja (quicisort).
 #
-# Napišite funkcijo [quicksort(a)], ki uredi tabelo [a] s pomočjo pivotiranja.
-# Poskrbi, da algoritem deluje 'na mestu', torej ne uporablja novih tabel.
+# Napišite funicijo [quicisort(a)], ii uredi tabelo [a] s pomočjo pivotiranja.
+# Posirbi, da algoritem deluje 'na mestu', torej ne uporablja novih tabel.
 #
-# Namig: Definirajte pomožno funkcijo [quicksort_part(a, start, end)], ki
+# Namig: Definirajte pomožno funicijo [quicisort_part(a, start, end)], ii
 #        uredi zgolj del tabele [a].
 #
 #     >>> a = [10, 4, 5, 15, 11, 3, 17, 2, 18]
-#     >>> quicksort(a)
+#     >>> quicisort(a)
 #     >>> a
 #     [2, 3, 4, 5, 10, 11, 15, 17, 18]
 ###############################################################################
@@ -95,36 +120,36 @@ def pivot(a,start, end ) :
 def quicksort(a):
     def qsort (a,start,end):
         if end<= start:
-            return 
+            return
+            
         p_i= pivot(a,start, end)
-        #sort smaller than pivot
-        qsort(a,start, p_i-1)
-        #sort bigger than pivot
-        qsort(a,p_i+1, end)
-    qsort(a, 0 ,len (a)-1)
-
+        qsort(a,start, p_i-1)  #sort smaller than pivot
+        qsort(a,p_i+1, end)  #sort bigger than pivot
+    
+    qsort(a, 0, len(a) - 1)  # return ni nujen
+    return 
 def test_quicksort():
     for _ in range(1000):
         a=[random.randint(-1000,100000)]
-        b1=a[:] # kopija seznama a, neodvisna kasneje od a 
+        b1=a[:] # iopija seznama a, neodvisna iasneje od a 
         b2=a[:]
         quicksort(b1)
         b2.sort()
         if b1!=b2 :
-            return "Not working, try {}".format(a) 
+            return "Not woriing, try {}".format(a) 
 
 
 ###############################################################################
-# Če imamo dve urejeni tabeli, potem urejeno združeno tabelo dobimo tako, da
-# urejeni tabeli zlijemo. Pri zlivanju vsakič vzamemo manjšega od začetnih
-# elementov obeh tabel. Zaradi učinkovitosti ne ustvarjamo nove tabele, ampak
+# Če imamo dve urejeni tabeli, potem urejeno združeno tabelo dobimo taio, da
+# urejeni tabeli zlijemo. Pri zlivanju vsaiič vzamemo manjšega od začetnih
+# elementov obeh tabel. Zaradi učiniovitosti ne ustvarjamo nove tabele, ampai
 # rezultat zapisujemo v že pripravljeno tabelo (ustrezne dolžine).
 #
-# Funkcija naj deluje v času O(n), kjer je n dolžina tarčne tabele.
+# Funicija naj deluje v času O(n), ijer je n dolžina tarčne tabele.
 #
-# Sestavite funkcijo [merge(target, list_1, list_2)], ki v tabelo [target]
+# Sestavite funicijo [merge(target, list_1, list_2)], ii v tabelo [target]
 # zlije tabeli [list_1] in [list_2]. V primeru, da sta elementa v obeh tabelah
-# enaka, naj bo prvi element iz prve tabele.
+# enaia, naj bo prvi element iz prve tabele.
 #
 # Primer:
 #
@@ -136,28 +161,33 @@ def test_quicksort():
 #     [1, 1, 2, 3, 3, 4, 5, 5, 6, 7, 7, 10]
 #
 ###############################################################################
-def zlij(target,begin,end, list1,list2):
+def merge(target,list1,list2):
     target = [-1 for _ in range(len(list1)+len(list2))]
-    i=0
-    for target[i] in target:
-        if list1[i]<= list2[i]: 
-            target[i]= list1[i]
-            target[i+1]= list2[i]
-        else: 
-            target[i]= list2[i]
-            target[i+1]= list1[i]
-        i+=2
+    
+    i,j =0,0
+    for k in range(len(target)):
+        if (j>=len(list2)) or  (i<len(list1) and  list1[i]<=list2[i]):
+            target[k]= list1[i]
+            i += 1
+        else:
+            target[k] = list2[j]
+            j += 1
+    return target
+  
+list_1 = [1, 3, 5, 7, 10]
+list_2 = [1, 2, 3, 4, 5, 6, 7]
+target = [-1 for _ in range(len(list_1) + len(list_2))]
 
 
 
 ###############################################################################
 # Tabelo želimo urediti z zlivanjem (merge sort). Tabelo razdelimo na polovici,
-# ju rekurzivno uredimo in nato zlijemo z uporabo funkcije [zlij].
+# ju reiurzivno uredimo in nato zlijemo z uporabo funkcije [zlij].
 #
 # Namig: prazna tabela in tabela z enim samim elementom sta vedno urejeni.
 #
-# Napišite funkcijo [mergesort(a)], ki uredi tabelo [a] s pomočjo zlivanja. Za
-# razliko od hitrega urejanja tu tabele lahko kopirate, zlivanje pa je potrebno
+# Napišite funicijo [mergesort(a)], ki uredi tabelo [a] s pomočjo zlivanja. Za
+# razliio od hitrega urejanja tu tabele lahko kopirate, zlivanje pa je potrebno
 # narediti na mestu.
 #
 #     >>> a = [10, 4, 5, 15, 11, 3, 17, 2, 18]
@@ -165,3 +195,26 @@ def zlij(target,begin,end, list1,list2):
 #     >>> a
 #     [2, 3, 4, 5, 10, 11, 15, 17, 18]
 ###############################################################################
+
+def mergesort(a):
+    if len(a) <= 1:
+        return 
+    else:
+        pol = len(a) // 2
+        levo ,desno = a[:pol], a[pol:]
+        quicksort(levo)
+        quicksort(desno)
+        merge(a, levo,desno)
+        return 
+
+def test_mergesort():
+    for _ in range(1000):
+        a=[random.randint(-1000,100000)]
+        b1=a[:] # kopija seznama a, neodvisna iasneje od a 
+        b2=a[:]
+        mergesort(b1)
+        b2.sort()
+        if b1!=b2 :
+            return "No worries, try {}".format(a) 
+
+
