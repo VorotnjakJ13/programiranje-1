@@ -52,9 +52,40 @@ let max_cheese cheese_matrix =
 
   in 
   let () = loop (max_i-1) (max_j-1) in max_matrix
-        
 
+(*problem : 
+- delitev
+-zruževajne rešitev delitve
+-robni pogoji
+*)  
+  let maxcheese cheese = 
+    let height = Array.length cheese-1 in (*domnevamo da ni prazna matr*)
+    let width = Array.length cheese.(0)-1 (* po prvi vrstici*)
+    in 
+    let rec mouse x y = 
 
+      (* robni pogoji*)
+      if x = width && y=height then 
+      cheese.(y).(x)
+      else if x = width then 
+        let down = mouse x (y+1) in 
+        cheese.(y).(x)+down 
+      else if y = height then 
+        let right = mouse(x+1) y in 
+        cheese.(y).(x)+right 
+      
+      (*delitev je desno ali dol.*)
+      let right = mouse (x+1) y in 
+      let left = mouse x (y+1) in 
+      
+      (*združevanje je maximum*)
+      cheese.(y).(x) + max down right      
+    in 
+    mouse 0 0
+
+let maxcheese2  cheese = 
+  let height = Array.
+  let width = Array.
 (*----------------------------------------------------------------------------*]
  Poleg količine sira, ki jo miška lahko poje, jo zanima tudi točna pot, ki naj
  jo ubere, da bo prišla do ustrezne pojedine.

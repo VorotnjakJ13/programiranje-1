@@ -76,33 +76,6 @@ def pivot(a,start, end ) :
 # rešite brez da v celoti uredite tabelo [a].
 ###############################################################################
 
-<<<<<<< HEAD
-def kth_el_with_loop(a,k):
-    manjsi = 0 #indeks
-    vecji = len(a)-1
-    while True:
-        kandidat_i = pivot(a, manjsi, vecji)
-        # vrne indeks pivota , vse elmnte (med prvim in zadnjim)v tabeli in jih zamenja , 
-        # tako da je so najprej tisti ki so manjsi od pivota , nato pivot, nato pa tisti ki so večji od pivota
-        if kandidat_i ==k : # če prideš do ktega najmanjsega v tabeli
-            return a[kandidat_i]
-        elif kandidat_i <k : #če je manj kot kti najmanjši el. pogledamo naslednjega
-            manjsi = kandidat_i+1 # postaviga na levo od pivota
-        else:
-            vecji=kandidat_i-1 # če je večji od pivota, ga damo na levo od pivota
-    
-def kth_element_with_recursion(a,k):
-    def kth(lower,upper):
-        candidate_i = pivot(a, lower, upper)
-        if candidate_i == k :
-            return a[candidate_i]
-        elif candidate_i <k :
-            return kth(candidate_i+1, upper)
-        else : 
-            return kth(lower,candidate_i-1)
-    return kth(0,len(a)-1)
-=======
->>>>>>> 543840f8d14842578032926eca62a7998f900bd5
 
 ###############################################################################
 # Tabelo a želimo urediti z algoritmom hitrega urejanja (quicksort).

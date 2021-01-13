@@ -4,12 +4,34 @@ from functools import lru_cache
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Napišite funkcijo `najdaljse_narascajoce_podazporedje`, ki sprejme seznam in
+# Napišite funkcijo `najdaljse_narascajoce_podzaporedje`, ki sprejme seznam in
 # poišče najdaljše (ne strogo) naraščajoce podzaporedje števil v seznamu.
 #
 # Primer: v seznamu `[2, 3, 6, 8, 4, 4, 6, 7, 12, 8, 9]` kot rezultat vrne
 # podzaporedje `[2, 3, 4, 4, 6, 7, 8, 9]`.
-# -----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+#sez = []
+#def min_in_list(list):
+ #   minlist=list[0]
+  #  for i in range(len(list)):
+   #     if list[i] <= minlist:
+    #        minlist=list[i]
+     #       i += 1
+      #  else: i += 1
+    #return minlist
+
+#def najdaljse_narascujoce_podzaporedje(list):
+ #   while len(list) >= 0:
+  #      i=0
+   #     if (list[i] <= list[i + 1]) and min_in_list(list[:i + 1]) >= list[i + 1]:
+    #        sez.append(min_in_list(list))
+     #       i+=1
+      #  elif list[i]<= list[i+1]: sez.append(list[i+1])
+       # else : None
+    #return sez
+
+
+        
 
 # -----------------------------------------------------------------------------
 # Rešitev sedaj popravite tako, da funkcija `vsa_najdaljsa` vrne seznam vseh
