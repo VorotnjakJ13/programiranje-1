@@ -20,27 +20,39 @@ let test_matrix =
   [| [| 1 ; 2 ; 0 |];
      [| 2 ; 4 ; 5 |];
      [| 7 ; 0 ; 1 |] |]
-
+ (* 1. rešitev*)
 let max_cheese cheese_matrix = 
-  let max_i = Array.length cheese_matrix in
-  let max_j = Array.length cheese_matrix.(0) in 
-  let max_matrix = Array.make_matrix max_i max_j 0 in 
-  let how_much cheese i j  =
+  (*POSTAVIMO MATRIKO*)
+  let max_i = Array.length cheese_matrix in (*število vrstic*)
+  let max_j = Array.length cheese_matrix.(0) in (*število stolpcev *)
+  (* MATRIKA : Array.make_matrix #vrstice #stolpci #zapolni z 0  *)
+  let max_matrix = Array.make_matrix max_i max_j 0 in (*naredimo matriko veličine ixj in jo zapolnimo z ničlami*)
+ (*DELITEV PROBLEMA 
+  - Koliko sirčka lahko poberemo če začnemo na mestu (i,j)matrike, in končamo na mestu(max_i,max_j) ? *)
+  let how_much  cheese i j  =
     let cheese = cheese_matrix.(i).(j) in 
     if i < (max_i-1) then 
-      if j < (max_j-1) then cheese + max ( max_matrix.(i+1).(j)  max_martix(i).(j+1) )
+      if j < (max_j-1) then 
+        cheese + max ( max_matrix.(i+1).(j)  max_martix(i).(j+1) ) 
+        (*če nismo še čez celo matriko(-1), izberi korak ki ima več sira.(desno ali dol) *)
     else cheese + max_matrix.(i+1).(j)
-    else if j < (max_j-1) then cheese + max_martix(i).(j+1) 
-    else cheese
+    (*lahko gremo samo še desno. nemoremo več dol*)
+    else if j < (max_j-1)(*i>max_i-1*) then 
+    cheese + max_martix(i).(j+1) (*pojdi dol. desno nemoreš več*)
+    else cheese(*prišli smo na konec matrike, ni več korakov. vrni sir.*)
   in
+  (*ROBNI POGOJI *)
+  (*obravnavamo samo desno ali samo dol korake*)
   let how_much_cheese2 i j = 
     let cheese = cheese_matrix.(i).(j) in 
     let max_right = if j < (max_j -1) then max_matrix.(i).(j+1) else 0 in 
     let max_down = if i < (max_i -1) then max_matrix.(i+1).(j) else 0 in
       cheese+ max max_right max_down
   in 
+  (*ZDRUŽEVANJE REŠITEV*)
+  (*naredimo še zanko*)
   let rec loop i j = 
-  let cheese = how_much_cheese i j in 
+  let cheese = how_much_cheese i j in (*koliko lahko poberemo od (i,j) do (max_i,max_j)*)
   let () = max_matrix.(i).(j) <- cheese in 
     if j>0 then 
       (* vse je ok  *)
@@ -49,7 +61,6 @@ let max_cheese cheese_matrix =
         (* moramo skocit v novo vrstico   *)
      	if i>0  then loop (i-1) (max_j-1) 
       else ()
-
   in 
   let () = loop (max_i-1) (max_j-1) in max_matrix
 
@@ -58,34 +69,40 @@ let max_cheese cheese_matrix =
 -zruževajne rešitev delitve
 -robni pogoji
 *)  
-  let maxcheese cheese = 
-    let height = Array.length cheese-1 in (*domnevamo da ni prazna matr*)
-    let width = Array.length cheese.(0)-1 (* po prvi vrstici*)
-    in 
-    let rec mouse x y = 
-
-      (* robni pogoji*)
-      if x = width && y=height then 
-      cheese.(y).(x)
-      else if x = width then 
-        let down = mouse x (y+1) in 
-        cheese.(y).(x)+down 
-      else if y = height then 
-        let right = mouse(x+1) y in 
-        cheese.(y).(x)+right 
-      
-      (*delitev je desno ali dol.*)
-      let right = mouse (x+1) y in 
-      let left = mouse x (y+1) in 
-      
-      (*združevanje je maximum*)
-      cheese.(y).(x) + max down right      
-    in 
-    mouse 0 0
-
+(* 2. rešitev*)
+let maxcheese cheese = 
+  let height = Array.length cheese-1 in (*domnevamo da ni prazna matr*)
+  let width = Array.length cheese.(0)-1 (* po prvi vrstici*)
+  in 
+  let rec mouse x y = 
+  (* robni pogoji*)
+    if x = width && y=height then 
+    cheese.(y).(x)(*če smo prišli na konec*)
+    else if x = width then  (*nemoremo več desno *)
+      let down = mouse x (y+1) in 
+      cheese.(y).(x)+down 
+    else if y = height then (*nemoremo več dol*)
+      let right = mouse(x+1) y in 
+      cheese.(y).(x)+right 
+  (*združevanje je maximum*)
+  cheese.(y).(x) + max down right      
+in 
+mouse 0 0
+(*3. rešitev*)
 let maxcheese2  cheese = 
-  let height = Array.
-  let width = Array.
+  let height = Array.length cheese_matrix in 
+  let width = Array.length chese_matrix.(0) in 
+  let rec best_path x y =
+    let current_cheese = cheese_matrix.(x).(y) in 
+    let best_down = 
+      if (y+1 = width) then 0 
+      else best_path x (y+1) 
+      in 
+    let best_right = 
+      if (x+1 = height) then 0
+      else best_path (x+1) y 
+  in 
+  best_path 0 0
 (*----------------------------------------------------------------------------*]
  Poleg količine sira, ki jo miška lahko poje, jo zanima tudi točna pot, ki naj
  jo ubere, da bo prišla do ustrezne pojedine.
@@ -101,7 +118,31 @@ let maxcheese2  cheese =
  - : int list = [1; 2; 4; 5; 1]
 [*----------------------------------------------------------------------------*)
 
-type mouse_direction = Down | Right
+type mouse_direction =
+   |Down of down
+   |Right of right
+list = []
+let optimal_path cheese_matrix = 
+  let height = Array.length cheese-1 in (*domnevamo da ni prazna matr*)
+  let width = Array.length cheese.(0)-1 (* po prvi vrstici*)
+  in 
+  let rec mouse x y = 
+  (* robni pogoji*)
+    if x = width && y=height then 
+    mouse_direction list(*če smo prišli na konec*)
+    else if x = width then  (*nemoremo več desno *)
+      let down = mouse x (y+1) in 
+      cheese.(y).(x)+down
+    
+    else if y = height then (*nemoremo več dol*)
+      let right = mouse(x+1) y in 
+      cheese.(y).(x)+right 
+    list.append(mouse_direction)
+  (*združevanje je maximum*)
+  cheese.(y).(x) + max down right 
+  list     
+in 
+mouse 0 0
 
 
 (*----------------------------------------------------------------------------*]
